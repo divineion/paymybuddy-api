@@ -35,11 +35,11 @@ CREATE TABLE IF NOT EXISTS `paymybuddy`.`user` (
 
 
 -- -----------------------------------------------------
--- Table `paymybuddy`.`transaction`
+-- Table `paymybuddy`.`transfer`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `paymybuddy`.`transaction` ;
+DROP TABLE IF EXISTS `paymybuddy`.`transfer` ;
 
-CREATE TABLE IF NOT EXISTS `paymybuddy`.`transaction` (
+CREATE TABLE IF NOT EXISTS `paymybuddy`.`transfer` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `sender` INT NOT NULL,
   `receiver` INT NOT NULL,
@@ -47,15 +47,15 @@ CREATE TABLE IF NOT EXISTS `paymybuddy`.`transaction` (
   `amount` DECIMAL(10,2) NOT NULL,
   `date` DATETIME NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_transaction_sender_idx` (`sender` ASC) VISIBLE,
-  INDEX `fk_transaction_receiver_idx` (`receiver` ASC) VISIBLE,
+  INDEX `fk_transfer_sender_idx` (`sender` ASC) VISIBLE,
+  INDEX `fk_transfer_receiver_idx` (`receiver` ASC) VISIBLE,
   INDEX `amount_idx` (`amount` ASC) VISIBLE,
-  CONSTRAINT `fk_transaction_sender`
+  CONSTRAINT `fk_transfer_sender`
     FOREIGN KEY (`sender`)
     REFERENCES `paymybuddy`.`user` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `fk_transaction_receiver`
+  CONSTRAINT `fk_transfer_receiver`
     FOREIGN KEY (`receiver`)
     REFERENCES `paymybuddy`.`user` (`id`)
     ON DELETE CASCADE
@@ -112,16 +112,16 @@ INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES
 COMMIT;
 
 -- -----------------------------------------------------
--- Data for table `paymybuddy`.`transaction`
+-- Data for table `paymybuddy`.`transfer`
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `paymybuddy`;
-INSERT INTO `paymybuddy`.`transaction` (`sender`, `receiver`, `description`, `amount`, `date`) 
+INSERT INTO `paymybuddy`.`transfer` (`sender`, `receiver`, `description`, `amount`, `date`) 
 SELECT 1, 2, 'parc aquatique', 18, NOW()
 WHERE EXISTS (SELECT 1 FROM `paymybuddy`.`user_beneficiary` WHERE `user_id` = 1 AND `beneficiary_id` = 2);
 
 -- -----------------------------------------------------
--- Update table `paymybuddy`.`transaction`
+-- Update table `paymybuddy`.`transfer`
 -- -----------------------------------------------------
 UPDATE `paymybuddy`.`user` SET `balance` = `balance` - 18 WHERE `id` = 1 AND EXISTS (SELECT 1 FROM `paymybuddy`.`user_beneficiary` WHERE `user_id` = 1 AND `beneficiary_id` = 2);
 UPDATE `paymybuddy`.`user` SET `balance` = `balance` + 18 WHERE `id` = 2 AND EXISTS (SELECT 1 FROM `paymybuddy`.`user_beneficiary` WHERE `user_id` = 1 AND `beneficiary_id` = 2);

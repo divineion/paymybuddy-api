@@ -2,14 +2,14 @@
 
 Prototype d'une application de transfert d'argent entre utilisateurs. 
 
-## Le prototype
+## L'application
 
 Les utilisateurs doivent pouvoir :
  - s'inscrire à l'aide d'un identifiant e-mail unique,
  - se connecter avec leurs identifiants personnels,
- - ajouter des amis à leur réseau pour transférer de l'argent. 
+ - ajouter des amis à leur réseau pour leur transférer de l'argent. 
 
-## Modèle Physique de Données (MPD)
+## Modèle Physique de Données
 
 Le diagramme EER ci-dessous décrit la structure des tables et les relations entre elles dans la base de données.
 
@@ -27,7 +27,7 @@ Le diagramme EER ci-dessous décrit la structure des tables et les relations ent
 
 Le champ `active_email` permet de conserver l'unicité de l'adresse e-mail uniquement parmi les comptes utilisateurs actifs (non supprimés).   
    
-- **transaction** : enregistre les transactions entre utilisateurs.<br>  
+- **transfer** : enregistre les transactions entre utilisateurs.<br>  
 *id* : identifiant unique de la transaction,<br>
 *sender* : identifiant de l'utilisateur qui envoie de l'argent,<br>
 *receiver* : identifiant de l'utilisateur qui reçoit de l'argent,<br>
@@ -35,7 +35,6 @@ Le champ `active_email` permet de conserver l'unicité de l'adresse e-mail uniqu
 *amount* : montant de la transaction.<br>
   
 Les transactions sont liées aux utilisateurs via les clés étrangères `sender` et `receiver` qui font référence à `user.id`.
-   
    
 - **user_beneficiary** : gère les relations entre utilisateurs.<br>  
 *user_id* : identifiant de l'utilisateur qui a ajouté un bénéficiaire,<br>
@@ -45,6 +44,6 @@ Les connexions entre utilisateurs sont gérées via les clés étrangères `user
 
 ### Schéma de la base de données et données initiales
 
-Le schéma SQL fourni dans `resources/schema.sql` contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), mais aussi un **jeu de données initial**.  
+[Le schéma](src/main/resources/schema.sql), conçu pour être utilisé avec MySQL, contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), mais aussi un **jeu de données initial**.  
 Ces données permettent de comprendre le modèle en contexte réel et de tester rapidement le fonctionnement de l'application sans avoir à insérer manuellement des enregistrements. 
 
