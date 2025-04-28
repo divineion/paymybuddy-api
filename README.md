@@ -32,7 +32,9 @@ Le diagramme EER ci-dessous décrit la structure des tables et les relations ent
 *sender* : identifiant de l'utilisateur qui envoie de l'argent,<br>
 *receiver* : identifiant de l'utilisateur qui reçoit de l'argent,<br>
 *description* : description de la transaction qui permet de renseigner un motif,
-*amount* : montant de la transaction.<br>
+*amount_excluding_fees* : montant hors frais de la transaction : c'est le montant qui sera versé au bénéficiaire,
+*fees* : frais de service appliqués à chaque transaction (par défaut : 0,5%),
+*total_amount* : montant total de la transaction (par défaut, le montant versé au bénéficiaire + les frais).<br>
   
 Les transferts sont liés aux utilisateurs via les clés étrangères `sender` et `receiver` qui font référence à `user.id`. 
 Un index sur `amount` permet d'accélérer les recherches, notamment lors de filtres ou tris par montant.
