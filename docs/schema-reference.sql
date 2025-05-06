@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `paymybuddy`.`transfer` (
   `amount` DECIMAL(10,2) UNSIGNED NOT NULL,
   `fees` DECIMAL(10,3) UNSIGNED NOT NULL DEFAULT 0.005,
   `total_amount` DECIMAL(10,2) GENERATED ALWAYS AS (ROUND(amount * (1+fees), 2)) STORED,
-  `date` TIMESTAMP NULL,
+  `date` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_transfer_sender_idx` (`sender` ASC),
   INDEX `fk_transfer_receiver_idx` (`receiver` ASC),
