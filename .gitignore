@@ -5,7 +5,7 @@ target/
 !**/src/test/**/target/
 
 ### application.properties files ###
-src/main/resources/application-local.properties
+config/application-local.properties
 
 ### STS ###
 .apt_generated
