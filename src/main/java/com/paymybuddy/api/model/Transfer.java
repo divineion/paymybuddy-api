@@ -31,7 +31,7 @@ public class Transfer {
 	@JoinColumn(name="receiver", referencedColumnName = "id", nullable=false)
 	private User receiver;
 
-	@Column(nullable=false)
+	@Column(nullable=false, length = 255)
 	private String description;
 
 	@Column(nullable=false, precision = 10, scale = 2)

@@ -27,10 +27,10 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(nullable=false)
+	@Column(nullable=false, length = 50)
 	private String username;
 	
-	@Column(nullable=false)
+	@Column(nullable=false, length = 100)
 	private String email;
 	
 	@Column(name="deleted_at", columnDefinition = "TIMESTAMP(0)")
@@ -39,10 +39,10 @@ public class User {
 	@Column(nullable=false, precision = 10, scale = 2)
 	private BigDecimal balance;
 	
-	@Column(nullable=false)
+	@Column(nullable=false, length = 255)
 	private String password;
 	
-	@Column(name="active_email", unique=true)
+	@Column(name="active_email", unique=true, length = 100)
 	private String activeEmail;
 	
 	@OneToMany(mappedBy="sender") //default lazy
