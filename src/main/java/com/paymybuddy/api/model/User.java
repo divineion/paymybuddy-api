@@ -21,7 +21,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="user")
+@Table(name="app_user")
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +45,7 @@ public class User {
 	@Column(name="active_email", unique=true)
 	private String activeEmail;
 	
-	@OneToMany(mappedBy="sender")
+	@OneToMany(mappedBy="sender") //default lazy
 	private List<Transfer> sentTransfers;
 	
 	@OneToMany(mappedBy="receiver")
