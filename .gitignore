@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### SQL data initialization files ###
+docs/mysql/data.sql
+docs/postgresql/data.sql
+
 ### application.properties files ###
 config/application-local.properties
 
@@ -34,5 +38,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
 
 

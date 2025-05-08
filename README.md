@@ -49,21 +49,27 @@ La table `user_beneficiary` contient ainsi uniquement des associations entre ide
 
 ### Schéma de la base de données et données initiales
 
-[Le schéma](src/main/resources/schema.sql), conçu pour être utilisé avec MySQL, contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), mais aussi un **jeu de données initial**.  
-Ces données permettent de comprendre le modèle en contexte réel et de tester rapidement le fonctionnement de l'application sans avoir à insérer manuellement des enregistrements. 
+[Le schéma](docs/schema.sql) initial, conçu pour être utilisé avec MySQL, contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), et un **jeu de données initial**.   
+
+Il est conservé à titre documentaire.
+
+Le schéma réel de la base est désormais généré automatiquement par Hibernate au démarrage de l'application, sur la base des entités JPA du projet.
 
 La base de données doit être créée avant le démarrage de l'application. 
 
 ### Création de la base de données
 
-Dans un terminal, se connecter à MySQL avec la commande <code>mysql -u root -p</code>, puis saisir le mot de passe.<br>
-Une fois connecté, créer la base de données avec la commande <code>CREATE DATABASE paymybuddy;</code>
+Avec MySQL ou PostgreSQL : 
+<code>CREATE DATABASE paymybuddy;</code>
 
 ### Démarrage de l'application
 
-Créer un profil local en dupliquant le contenu du fichier [application.properties](src/main/resources/application.properties) dans un fichier application-local.properties. 
+Créer un profil local en dupliquant le contenu du fichier [application.properties](src/main/resources/application.properties) dans un fichier `config/application-local.properties`. 
 
-Renseigner les informations de connexion à la base de données locale dans le fichier applications-local.properties. Ce fichier ne doit pas être commité dans le dépôt.
+Les paramètres de connexion dans `config/application-local.properties` doivent correspondre au SGBDR utilisé (spring.datasource.url, username, password, et driver-class-name).   
+Ce fichier ne doit pas être commité dans le dépôt.
+
+Le premier démarrage de l'application entraîne la génération du schéma de données et l'insertion de données. 
 
 #### Depuis un terminal
 
