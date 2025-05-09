@@ -10,10 +10,6 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema paymybuddy
 -- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema paymybuddy
--- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `paymybuddy` DEFAULT CHARACTER SET utf8 ;
 USE `paymybuddy` ;
 
@@ -96,23 +92,20 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- -----------------------------------------------------
 -- Data for table `paymybuddy`.`app_user`
 -- -----------------------------------------------------
-START TRANSACTION;
-USE `paymybuddy`;
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ( 'Georgia', 'georgia@email.com', NULL, 'georgia_password', 100.00);
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ( 'Tanka', 'tanka@email.com', NULL, 'tanka_password', 100.00);
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ( 'Bagheera', 'bagheera@email.com', NULL, 'bagheera_password', 100.00);
-
-COMMIT;
-
+-- -----------------------------------------------------
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Georgia', 'georgia@email.com', NULL, 'georgia_password', 100.00);
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Tanka', 'tanka@email.com', NULL, 'tanka_password', 100.00);
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Bagheera', 'bagheera@email.com', NULL, 'bagheera_password', 100.00);
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Mania', 'mania@email.com', NULL, 'bagheera_password', 100.00);
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Jeena', 'jeena@email.com', NULL, 'bagheera_password', 100.00);
 
 -- -----------------------------------------------------
 -- Data for table `paymybuddy`.`user_beneficiary`
 -- -----------------------------------------------------
-START TRANSACTION;
-USE `paymybuddy`;
 INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES (1, 2);
+INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES (1, 3);
+INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES (3, 4);
 
-COMMIT;
 
 -- -----------------------------------------------------
 -- Update table `paymybuddy`.`transfer`
@@ -122,7 +115,7 @@ START TRANSACTION;
 USE `paymybuddy`;
 
 INSERT INTO `paymybuddy`.`transfer` (`sender`, `receiver`, `description`, `amount`, `date`) 
-SELECT 1, 2, 'parc aquatique', 18, NOW();
+SELECT 1, 2, 'entrée parc aquatique', 18, NOW();
 
 -- -----------------------------------------------------
 -- Update app_user (sender) balance after transfer
