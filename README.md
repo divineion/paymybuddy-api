@@ -23,7 +23,7 @@ Le diagramme EER ci-dessous décrit la structure des tables et les relations ent
 *password* : mot de passe,<br>
 *balance* : solde du compte en euros (ne peut pas être négatif),<br>
 *deleted_at* : date de suppression du compte (soft-delete),<br>
-*active_email* : colonne générée pour contenir l'adresse e-mail d'un utilisateur actif. Si le compte de l'utilisateur a été supprimé, un nouveau compte avec la même adresse e-mail peut être créé.<br>
+*active_email* : colonne calculée dynamiquement à partir des champs èmail`et `deleted_at` pour contenir l'adresse e-mail d'un utilisateur actif. Si le compte de l'utilisateur a été supprimé, un nouveau compte avec la même adresse e-mail peut être créé.<br>
 
 **Le champ `active_email` permet de conserver l'unicité de l'adresse e-mail uniquement parmi les comptes utilisateurs actifs** (non supprimés).   
    
@@ -37,7 +37,6 @@ Le diagramme EER ci-dessous décrit la structure des tables et les relations ent
 *total_amount* : montant total de la transaction (par défaut, le montant versé au bénéficiaire + les frais).<br>
   
 Les transferts sont liés aux utilisateurs via les clés étrangères `sender` et `receiver` qui font référence à `user.id`. 
-Un index sur `amount` permet d'accélérer les recherches, notamment lors de filtres ou tris par montant.
    
 - **user_beneficiary** : gère les relations entre utilisateurs.<br>  
 *user_id* : identifiant de l'utilisateur qui a ajouté un bénéficiaire,<br>
@@ -47,15 +46,21 @@ Les relations entre utilisateurs sont gérées via les clés étrangères `user_
 La table `user_beneficiary` contient ainsi uniquement des associations entre identifiants d'utilisateurs.<br>
 **Chaque couple (user_id, beneficiary_id) est unique** : un même bénéficiaire ne peut pas être ajouté plusieurs fois par le même utilisateur.<br>
 
-### Schéma de la base de données et données initiales
+### Initialisation du schéma de la base de données et données initiales
 
-[Le schéma](docs/schema.sql) initial, conçu pour être utilisé avec MySQL, contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), et un **jeu de données initial**.   
+#### Avec script SQL
 
-Il est conservé à titre documentaire.
+La configuration courante du projet dans [application.properties](src/main/resources/application.properties) est définie sur `mysql`.
+[Le schéma](src/main/resources/schema-mysql.sql), conçu pour être utilisé avec MySQL, contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), et un **jeu de données initial**.
 
-Le schéma réel de la base est désormais généré automatiquement par Hibernate au démarrage de l'application, sur la base des entités JPA du projet.
+[Une version PostgreSQL du schéma](src/main/resources/schema-postgresql.sql) initial peut être initialisée en définissant le profil `postgresql`.
+
+#### Avec Hibernate
+
+Le schéma de la base de données peut également être généré automatiquement par Hibernate au démarrage de l'application, sur la base des entités JPA du projet, en définissant le profil sur `hibernate-init`. 
 
 La base de données doit être créée avant le démarrage de l'application. 
+Le premier démarrage de l'application entraîne la génération du schéma de données et l'insertion de données. 
 
 ### Création de la base de données
 
@@ -63,13 +68,6 @@ Avec MySQL ou PostgreSQL :
 <code>CREATE DATABASE paymybuddy;</code>
 
 ### Démarrage de l'application
-
-Créer un profil local en dupliquant le contenu du fichier [application.properties](src/main/resources/application.properties) dans un fichier `config/application-local.properties`. 
-
-Les paramètres de connexion dans `config/application-local.properties` doivent correspondre au SGBDR utilisé (spring.datasource.url, username, password, et driver-class-name).   
-Ce fichier ne doit pas être commité dans le dépôt.
-
-Le premier démarrage de l'application entraîne la génération du schéma de données et l'insertion de données. 
 
 #### Depuis un terminal
 
