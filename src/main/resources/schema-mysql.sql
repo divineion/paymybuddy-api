@@ -10,13 +10,14 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema paymybuddy
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `paymybuddy`;
+
 CREATE SCHEMA IF NOT EXISTS `paymybuddy` DEFAULT CHARACTER SET utf8 ;
 USE `paymybuddy` ;
 
 -- -----------------------------------------------------
 -- Table `paymybuddy`.`app_user`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `paymybuddy`.`app_user` ;
 
 CREATE TABLE IF NOT EXISTS `paymybuddy`.`app_user` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -33,8 +34,6 @@ CREATE TABLE IF NOT EXISTS `paymybuddy`.`app_user` (
 -- -----------------------------------------------------
 -- Table `paymybuddy`.`transfer`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `paymybuddy`.`transfer` ;
-
 CREATE TABLE IF NOT EXISTS `paymybuddy`.`transfer` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `sender` INT UNSIGNED NOT NULL,
@@ -64,8 +63,6 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `paymybuddy`.`user_beneficiary`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `paymybuddy`.`user_beneficiary` ;
-
 CREATE TABLE IF NOT EXISTS `paymybuddy`.`user_beneficiary` (
   `user_id` INT UNSIGNED NOT NULL,
   `beneficiary_id` INT UNSIGNED NOT NULL,
