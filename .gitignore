@@ -4,8 +4,14 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### SQL data initialization files ###
+docs/mysql/data.sql
+docs/postgresql/data.sql
+
 ### application.properties files ###
-config/application-local.properties
+config/application-mysql.properties
+config/application-postgresql.properties
+config/application-hibernate-init.properties
 
 ### STS ###
 .apt_generated
@@ -34,5 +40,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
 
 

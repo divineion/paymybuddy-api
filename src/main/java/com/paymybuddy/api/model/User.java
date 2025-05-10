@@ -63,18 +63,18 @@ public class User {
 	
 	protected User() {}
 
-	public User(Integer id, String username, String email, LocalDateTime deletedAt, BigDecimal balance, String password, List<Transfer> sentTransfers, List<Transfer> receivedTransfers,
-			Set<User> beneficiaries) {
-		super();
+	private User(Integer id, String username, String email, LocalDateTime deletedAt, BigDecimal balance, String password, String activeEmail) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
 		this.deletedAt = deletedAt;
 		this.balance = balance;
 		this.password = password;
-		this.sentTransfers = sentTransfers == null ? new ArrayList<>() : sentTransfers;
-		this.receivedTransfers = receivedTransfers == null ? new ArrayList<>() : receivedTransfers;
-		this.beneficiaries = beneficiaries == null ? new HashSet<>() : beneficiaries;
+		this.activeEmail = activeEmail;
+	}
+	
+	public static User forInitialData(Integer id, String username, String email, LocalDateTime deletedAt, BigDecimal balance, String password, String activeEmail) {
+		return new User(id, username, email, deletedAt, balance, password, activeEmail);
 	}
 	
 	public Integer getId() {

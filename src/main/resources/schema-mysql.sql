@@ -10,19 +10,16 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema paymybuddy
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `paymybuddy`;
 
--- -----------------------------------------------------
--- Schema paymybuddy
--- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `paymybuddy` DEFAULT CHARACTER SET utf8 ;
 USE `paymybuddy` ;
 
 -- -----------------------------------------------------
--- Table `paymybuddy`.`user`
+-- Table `paymybuddy`.`app_user`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `paymybuddy`.`user` ;
 
-CREATE TABLE IF NOT EXISTS `paymybuddy`.`user` (
+CREATE TABLE IF NOT EXISTS `paymybuddy`.`app_user` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(50) NOT NULL,
   `email` VARCHAR(255) NOT NULL,
@@ -37,8 +34,6 @@ CREATE TABLE IF NOT EXISTS `paymybuddy`.`user` (
 -- -----------------------------------------------------
 -- Table `paymybuddy`.`transfer`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `paymybuddy`.`transfer` ;
-
 CREATE TABLE IF NOT EXISTS `paymybuddy`.`transfer` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `sender` INT UNSIGNED NOT NULL,
@@ -54,12 +49,12 @@ CREATE TABLE IF NOT EXISTS `paymybuddy`.`transfer` (
   INDEX `total_amount_idx` (`total_amount` ASC),
   CONSTRAINT `fk_transfer_sender`
     FOREIGN KEY (`sender`)
-    REFERENCES `paymybuddy`.`user` (`id`)
+    REFERENCES `paymybuddy`.`app_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_transfer_receiver`
     FOREIGN KEY (`receiver`)
-    REFERENCES `paymybuddy`.`user` (`id`)
+    REFERENCES `paymybuddy`.`app_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
@@ -68,8 +63,6 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `paymybuddy`.`user_beneficiary`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `paymybuddy`.`user_beneficiary` ;
-
 CREATE TABLE IF NOT EXISTS `paymybuddy`.`user_beneficiary` (
   `user_id` INT UNSIGNED NOT NULL,
   `beneficiary_id` INT UNSIGNED NOT NULL,
@@ -78,12 +71,12 @@ CREATE TABLE IF NOT EXISTS `paymybuddy`.`user_beneficiary` (
   PRIMARY KEY (`user_id`, `beneficiary_id`),
   CONSTRAINT `fk_userbeneficiary_user_id`
     FOREIGN KEY (`user_id`)
-    REFERENCES `paymybuddy`.`user` (`id`)
+    REFERENCES `paymybuddy`.`app_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_userbeneficiary_beneficiary_id`
     FOREIGN KEY (`beneficiary_id`)
-    REFERENCES `paymybuddy`.`user` (`id`)
+    REFERENCES `paymybuddy`.`app_user` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
@@ -94,25 +87,22 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -- -----------------------------------------------------
--- Data for table `paymybuddy`.`user`
+-- Data for table `paymybuddy`.`app_user`
 -- -----------------------------------------------------
-START TRANSACTION;
-USE `paymybuddy`;
-INSERT INTO `paymybuddy`.`user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ( 'Georgia', 'georgia@email.com', NULL, 'georgia_password', 100.00);
-INSERT INTO `paymybuddy`.`user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ( 'Tanka', 'tanka@email.com', NULL, 'tanka_password', 100.00);
-INSERT INTO `paymybuddy`.`user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ( 'Bagheera', 'bagheera@email.com', NULL, 'bagheera_password', 100.00);
-
-COMMIT;
-
+-- -----------------------------------------------------
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Georgia', 'georgia@email.com', NULL, 'georgia_password', 100.00);
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Tanka', 'tanka@email.com', NULL, 'tanka_password', 100.00);
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Bagheera', 'bagheera@email.com', NULL, 'bagheera_password', 100.00);
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Mania', 'mania@email.com', NULL, 'bagheera_password', 100.00);
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Jeena', 'jeena@email.com', NULL, 'bagheera_password', 100.00);
 
 -- -----------------------------------------------------
 -- Data for table `paymybuddy`.`user_beneficiary`
 -- -----------------------------------------------------
-START TRANSACTION;
-USE `paymybuddy`;
 INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES (1, 2);
+INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES (1, 3);
+INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES (3, 4);
 
-COMMIT;
 
 -- -----------------------------------------------------
 -- Update table `paymybuddy`.`transfer`
@@ -122,19 +112,19 @@ START TRANSACTION;
 USE `paymybuddy`;
 
 INSERT INTO `paymybuddy`.`transfer` (`sender`, `receiver`, `description`, `amount`, `date`) 
-SELECT 1, 2, 'parc aquatique', 18, NOW();
+SELECT 1, 2, 'entrée parc aquatique', 18, NOW();
 
 -- -----------------------------------------------------
--- Update user (sender) balance after transfer
+-- Update app_user (sender) balance after transfer
 -- -----------------------------------------------------
-UPDATE `paymybuddy`.`user` u
+UPDATE `paymybuddy`.`app_user` u
 SET u.balance = u.balance - 18 * (1 + 0.005)
 WHERE u.id = 1;
 
 -- -----------------------------------------------------
--- Update user (beneficier) balance after transfer
+-- Update app_user (beneficier) balance after transfer
 -- -----------------------------------------------------
-UPDATE `paymybuddy`.`user` u
+UPDATE `paymybuddy`.`app_user` u
 SET u.balance = u.balance + 18
 WHERE u.id = 2;
 
