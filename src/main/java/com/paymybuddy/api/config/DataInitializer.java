@@ -7,7 +7,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import com.paymybuddy.api.model.Transfer;
 import com.paymybuddy.api.model.User;
+import com.paymybuddy.api.repositories.TransferRepository;
 import com.paymybuddy.api.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -15,9 +17,11 @@ import jakarta.transaction.Transactional;
 @Component
 public class DataInitializer {
 	private final UserRepository userRepository;
+	private final TransferRepository transferRepository;
 
-	public DataInitializer(UserRepository userRepository) {
+	public DataInitializer(UserRepository userRepository, TransferRepository transferRepository) {
 		this.userRepository = userRepository;
+		this.transferRepository = transferRepository;
 	}
 
 	@Transactional // voir P2C3 et doc
@@ -71,7 +75,13 @@ public class DataInitializer {
 					user3.addBeneficiary(user4);
 					userRepository.save(user3);
 				}
-			}	
+			}
+			
+			if (transferRepository.count() == 0) {
+				BigDecimal amount = new BigDecimal(18);
+				Transfer transfer = Transfer.forInitialData(optUser1.get(), optUser2.get(), "entrée parc aquatique", amount);
+				transferRepository.save(transfer);
+			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
