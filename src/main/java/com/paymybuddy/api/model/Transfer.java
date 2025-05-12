@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,10 +25,12 @@ public class Transfer {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@JsonBackReference
 	@ManyToOne //https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#associations
 	@JoinColumn(name="sender", referencedColumnName = "id", nullable=false)
 	private User sender;
 
+	@JsonBackReference
 	@ManyToOne
 	@JoinColumn(name="receiver", referencedColumnName = "id", nullable=false)
 	private User receiver;
@@ -49,15 +53,15 @@ public class Transfer {
 
 	protected Transfer() {} // no class can accidentally use the default constructor
 
-	public Transfer(User sender, User receiver, String description, BigDecimal amount, BigDecimal fees,
-			BigDecimal totalAmount, LocalDateTime date) {
+	private Transfer(User sender, User receiver, String description, BigDecimal amount) {
 		this.sender = sender;
 		this.receiver = receiver;
 		this.description = description;
 		this.amount = amount;
-		this.fees = fees;
-		this.totalAmount = totalAmount;
-		this.date = date;
+	}
+	
+	public static Transfer forInitialData(User sender, User receiver, String description, BigDecimal amount) {
+		return new Transfer (sender, receiver, description, amount);
 	}
 
 	public Integer getId() {
