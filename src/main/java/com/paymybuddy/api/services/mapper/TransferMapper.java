@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.paymybuddy.api.model.Transfer;
 import com.paymybuddy.api.model.dto.BeneficiaryDto;
 import com.paymybuddy.api.model.dto.TransferDto;
+import com.paymybuddy.api.utils.AmountRounder;
 
 @Service
 public class TransferMapper {
@@ -25,7 +26,7 @@ public class TransferMapper {
 		BeneficiaryDto receiver = new BeneficiaryDto(transfer.getReceiver().getId(),
 				transfer.getReceiver().getUsername());
 
-		BigDecimal amount = transfer.getSender().getId() == userId ? transfer.getTotalAmount() : transfer.getAmount();
+		BigDecimal amount = AmountRounder.round(transfer.getSender().getId() == userId ? transfer.getTotalAmount() : transfer.getAmount());
 
 		return new TransferDto(transfer.getId(), sender, receiver, transfer.getDescription(), amount,
 				transfer.getDate());
