@@ -32,12 +32,12 @@ public class TransferMapperTest {
 		Transfer transfer = mock(Transfer.class);
 		when(transfer.getSender()).thenReturn(sender);
 		when(transfer.getReceiver()).thenReturn(receiver);
-		when(transfer.getTotalAmount()).thenReturn(new BigDecimal("100.5"));
+		when(transfer.getTotalAmount()).thenReturn(new BigDecimal("14.426"));
 		
 		//WHEN
 		TransferDto dto = mapper.fromTransferToTransferDto(transfer, 1);
 		
-		BigDecimal expectedAmount = new BigDecimal("100.50");
+		BigDecimal expectedAmount = new BigDecimal("14.43");
 		
 		//THEN
 		assertEquals(expectedAmount, dto.amount());
