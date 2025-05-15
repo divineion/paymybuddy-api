@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
 	</properties>
 	<dependencies>
 		<!-- Spring Boot Starter Data JPA -->
@@ -109,6 +110,33 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+			<plugin>
+			    <groupId>org.jacoco</groupId>
+			    <artifactId>jacoco-maven-plugin</artifactId>
+			    <version>${jacoco-maven-plugin.version}</version>
+			    <executions>
+			    	<execution>
+						<id>default-prepare-agent</id>
+			    		<goals>
+			    			<goal>prepare-agent</goal>
+			    		</goals>
+			    	</execution>
+			    	<execution>
+			    	<id>default-report</id>
+			    	<phase>verify</phase>
+			    		<goals>
+			    			<goal>report</goal>
+			    		</goals>
+    		            <configuration>
+			                <outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>
+			                <formats>
+			                    <format>HTML</format>
+			                </formats>
+		            	</configuration>
+			    	</execution>
+			    </executions>
 			</plugin>
 		</plugins>
 	</build>
