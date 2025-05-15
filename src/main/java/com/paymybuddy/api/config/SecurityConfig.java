@@ -13,8 +13,10 @@ public class SecurityConfig {
 	@Bean // enregistre la valeur de retour en tant que Bean 
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http
+	            .csrf().disable()
 	            .authorizeHttpRequests(auth -> auth
 	                    .anyRequest().permitAll()
-	                ).build();
+	                )
+	            .build();
 	}
 }
