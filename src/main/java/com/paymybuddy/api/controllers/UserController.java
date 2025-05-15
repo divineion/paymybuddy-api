@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.model.dto.TransferPageDto;
 import com.paymybuddy.api.model.dto.UserDto;
-import com.paymybuddy.api.services.finder.UserFinderService;
+import com.paymybuddy.api.services.user.UserService;
 
 @RestController
 public class UserController {
 	@Autowired
-	UserFinderService finder;
+	UserService finder;
 	
 	@GetMapping("/api/user/{id}")
 	public ResponseEntity<UserDto> getUserById(@PathVariable int id) {

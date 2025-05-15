@@ -1,4 +1,4 @@
-package com.paymybuddy.api.services.finder;
+package com.paymybuddy.api.services.user;
 
 import java.util.Comparator;
 import java.util.List;
@@ -12,17 +12,16 @@ import com.paymybuddy.api.model.dto.TransferDto;
 import com.paymybuddy.api.model.dto.TransferPageDto;
 import com.paymybuddy.api.model.dto.UserDto;
 import com.paymybuddy.api.repositories.UserRepository;
-import com.paymybuddy.api.services.mapper.TransferMapper;
-import com.paymybuddy.api.services.mapper.UserMapper;
+import com.paymybuddy.api.services.transfer.TransferMapper;
 
 @Service
-public class UserFinderService {
+public class UserService {
 
 	private final UserRepository userRepository;
 	private final UserMapper mapper;
 	private final TransferMapper transferMapper;
 
-	private UserFinderService(UserRepository userRepository, UserMapper mapper, TransferMapper transferMapper) {
+	private UserService(UserRepository userRepository, UserMapper mapper, TransferMapper transferMapper) {
 		this.userRepository = userRepository;
 		this.mapper = mapper;
 		this.transferMapper = transferMapper;
