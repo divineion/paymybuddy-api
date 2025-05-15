@@ -90,11 +90,40 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- Data for table `paymybuddy`.`app_user`
 -- -----------------------------------------------------
 -- -----------------------------------------------------
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Georgia', 'georgia@email.com', NULL, 'georgia_password', 100.00);
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Tanka', 'tanka@email.com', NULL, 'tanka_password', 100.00);
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Bagheera', 'bagheera@email.com', NULL, 'bagheera_password', 100.00);
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Mania', 'mania@email.com', NULL, 'bagheera_password', 100.00);
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) VALUES ('Jeena', 'jeena@email.com', NULL, 'bagheera_password', 100.00);
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) 
+SELECT * FROM (SELECT 'Georgia', 'georgia@email.com', NULL, 'georgia_password', 100.00) AS tmp
+WHERE NOT EXISTS(
+	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'georgia@email.com'
+	)
+LIMIT 1;
+
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) 
+SELECT * FROM (SELECT 'Tanka', 'tanka@email.com', NULL, 'tanka_password', 100.00) AS tmp
+WHERE NOT EXISTS (
+	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'tanka@email.com'
+)
+LIMIT 1;
+
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`)
+SELECT * FROM (SELECT 'Bagheera', 'bagheera@email.com', NULL, 'bagheera_password', 100.00) AS tmp
+WHERE NOT EXISTS (
+	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'bagheera@gmail.com'
+)
+LIMIT 1;
+
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`)
+SELECT * FROM (SELECT 'Mania', 'mania@email.com', NULL, 'mania_password', 100.00) AS tmp
+WHERE NOT EXISTS (
+	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'mania@gmail.com'
+)
+LIMIT 1;
+
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`)
+SELECT * FROM (SELECT 'Jeena', 'jeena@email.com', NULL, 'jeena_password', 100.00) AS tmp
+WHERE NOT EXISTS (
+	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'jeena@gmail.com'
+)
+LIMIT 1;
 
 -- -----------------------------------------------------
 -- Data for table `paymybuddy`.`user_beneficiary`
