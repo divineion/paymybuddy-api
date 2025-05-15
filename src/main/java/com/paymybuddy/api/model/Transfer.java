@@ -49,7 +49,7 @@ public class Transfer {
 	private BigDecimal totalAmount;
 
 	@Column(nullable = false, columnDefinition = "TIMESTAMP(0)")
-	private LocalDateTime date;
+	private LocalDateTime date = LocalDateTime.now();
 
 	protected Transfer() {} // no class can accidentally use the default constructor
 

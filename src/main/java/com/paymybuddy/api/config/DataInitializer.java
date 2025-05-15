@@ -3,6 +3,8 @@ package com.paymybuddy.api.config;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,7 @@ import jakarta.transaction.Transactional;
 
 @Component
 public class DataInitializer {
+	private static final Logger logger = LogManager.getLogger(DataInitializer.class); 
 	private final UserRepository userRepository;
 	private final TransferRepository transferRepository;
 
@@ -32,16 +35,16 @@ public class DataInitializer {
 				BigDecimal initialBalance = new BigDecimal(100.00);
 
 				// create and save users
-				User user1 = User.forInitialData(null, "Georgia", "georgia@email.com", null, initialBalance,
-						"any-hashed-password", null);
-				User user2 = User.forInitialData(null, "Tanka", "tanka@email.com", null, initialBalance,
-						"any-hashed-password", null);
-				User user3 = User.forInitialData(null, "Bagheera", "bagheera@email.com", null, initialBalance,
-						"any-hashed-password", null);
-				User user4 = User.forInitialData(null, "Mania", "mania@email.com", null, initialBalance,
-						"any-hashed-password", null);
-				User user5 = User.forInitialData(null, "Jeena", "jeena@email.com", null, initialBalance,
-						"any-hashed-password", null);
+				User user1 = User.forInitialData(null, "Georgia", "georgia@email.com", initialBalance,
+						"any-hashed-password");
+				User user2 = User.forInitialData(null, "Tanka", "tanka@email.com", initialBalance,
+						"any-hashed-password");
+				User user3 = User.forInitialData(null, "Bagheera", "bagheera@email.com", initialBalance,
+						"any-hashed-password");
+				User user4 = User.forInitialData(null, "Mania", "mania@email.com", initialBalance,
+						"any-hashed-password");
+				User user5 = User.forInitialData(null, "Jeena", "jeena@email.com", initialBalance,
+						"any-hashed-password");
 			
 				userRepository.save(user1);
 				userRepository.save(user2);
@@ -83,7 +86,7 @@ public class DataInitializer {
 				transferRepository.save(transfer);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 }
