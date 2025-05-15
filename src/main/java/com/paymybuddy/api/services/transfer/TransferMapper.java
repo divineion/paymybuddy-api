@@ -1,4 +1,4 @@
-package com.paymybuddy.api.services.mapper;
+package com.paymybuddy.api.services.transfer;
 
 import java.math.BigDecimal;
 
