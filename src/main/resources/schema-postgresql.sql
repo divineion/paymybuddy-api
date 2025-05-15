@@ -56,19 +56,34 @@ CREATE TABLE IF NOT EXISTS paymybuddy.user_beneficiary (
 -- Data for table paymybuddy.app_user
 -- -----------------------------------------------------
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-VALUES ('Georgia', 'georgia@email.com', NULL, 'georgia_password', 100.00);
+SELECT 'Georgia', 'georgia@email.com', NULL::timestamp, 'georgia_password', 100.00
+WHERE NOT EXISTS (
+	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'georgia@email.com'
+);
 
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-VALUES ('Tanka', 'tanka@email.com', NULL, 'tanka_password', 100.00); 
+SELECT 'Tanka', 'tanka@email.com', NULL::timestamp, 'tanka_password', 100.00
+WHERE NOT EXISTS (
+	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'tanka@email.com'
+); 
 
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-VALUES ('Bagheera', 'bagheera@email.com', NULL, 'bagheera_password', 100.00);
+SELECT 'Bagheera', 'bagheera@email.com', NULL::timestamp, 'bagheera_password', 100.00
+WHERE NOT EXISTS (
+	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'bagheera@email.com' 
+);
 
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-VALUES ('Mania', 'mania@email.com', NULL, 'bagheera_password', 100.00);
+SELECT 'Mania', 'mania@email.com', NULL::timestamp, 'mania_password', 100.00
+WHERE NOT EXISTS (
+	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'mania@email.com' 
+);
 
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-VALUES ('Jeena', 'jeena@email.com', NULL, 'bagheera_password', 100.00);
+SELECT 'Jeena', 'jeena@email.com', NULL, 'jeena_password', 100.00
+WHERE NOT EXISTS (
+	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'jeena@email.com' 
+);
 
 -- -----------------------------------------------------
 -- Data for table paymybuddy.user_beneficiary
