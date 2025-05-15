@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.paymybuddy.api.exceptions.EmailNotFoundException;
+import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.model.dto.BeneficiaryDto;
+import com.paymybuddy.api.model.dto.EmailRequestDto;
 import com.paymybuddy.api.model.dto.TransferDto;
 import com.paymybuddy.api.model.dto.TransferPageDto;
 import com.paymybuddy.api.model.dto.UserDto;
@@ -20,11 +23,13 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final UserMapper mapper;
 	private final TransferMapper transferMapper;
+	private final UserValidator validator;
 
-	private UserService(UserRepository userRepository, UserMapper mapper, TransferMapper transferMapper) {
+	private UserService(UserRepository userRepository, UserMapper mapper, TransferMapper transferMapper, UserValidator validator) {
 		this.userRepository = userRepository;
 		this.mapper = mapper;
 		this.transferMapper = transferMapper;
+		this.validator = validator;
 	}
 
 	public UserDto findUserById(int id) throws UserNotFoundException {
@@ -59,4 +64,17 @@ public class UserService {
 
 		return userTransferInfo;
 	}
+	
+	// POST REQUESTS
+	
+	//add a relation
+	// first of all verify the provided email address exists
+	public UserDto addBeneficiary(int id, EmailRequestDto emailDto) throws EmailNotFoundException, SelfRelationException {
+		String email = emailDto.email();
+		User searchedUser = validator.validateEmailExists(id, email);
+			return mapper.fromUserToUserDto(searchedUser);
+	}
+
+	
+	
 }
