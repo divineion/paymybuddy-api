@@ -55,6 +55,11 @@ La configuration courante du projet dans [application.properties](src/main/resou
 
 [Une version PostgreSQL du schéma](src/main/resources/schema-postgresql.sql) initial peut être initialisée en définissant le profil `postgresql`.
 
+Une fois l'application lancée et les données initialisées via le schéma SQL, la configuration doit être modifiée pour permettre la persistance des données par Hibernate. Les propriétés suivantes doivent être définies ainsi : 
+
+`spring.sql.init.mode=never`   
+`spring.jpa.hibernate.ddl-auto=update`
+
 #### Avec Hibernate
 
 Le schéma de la base de données peut également être généré automatiquement par Hibernate au démarrage de l'application, sur la base des entités JPA du projet, en définissant le profil sur `hibernate-init`. 
