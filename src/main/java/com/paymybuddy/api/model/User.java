@@ -2,10 +2,11 @@ package com.paymybuddy.api.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.hibernate.annotations.DynamicUpdate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +21,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
+@DynamicUpdate
 @Entity
 @Table(name="app_user")
 public class User {
@@ -63,18 +65,16 @@ public class User {
 	
 	protected User() {}
 
-	private User(Integer id, String username, String email, LocalDateTime deletedAt, BigDecimal balance, String password, String activeEmail) {
+	private User(Integer id, String username, String email, BigDecimal balance, String password) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
-		this.deletedAt = deletedAt;
 		this.balance = balance;
 		this.password = password;
-		this.activeEmail = activeEmail;
 	}
 	
-	public static User forInitialData(Integer id, String username, String email, LocalDateTime deletedAt, BigDecimal balance, String password, String activeEmail) {
-		return new User(id, username, email, deletedAt, balance, password, activeEmail);
+	public static User forInitialData(Integer id, String username, String email, BigDecimal balance, String password) {
+		return new User(id, username, email, balance, password);
 	}
 	
 	public Integer getId() {

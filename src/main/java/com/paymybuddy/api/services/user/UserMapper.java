@@ -1,4 +1,4 @@
-package com.paymybuddy.api.services.mapper;
+package com.paymybuddy.api.services.user;
 
 import org.springframework.stereotype.Service;
 

@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.paymybuddy.api.model.Transfer;
 import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.model.dto.TransferDto;
+import com.paymybuddy.api.services.transfer.TransferMapper;
 
 @ExtendWith(MockitoExtension.class)
 public class TransferMapperTest {
