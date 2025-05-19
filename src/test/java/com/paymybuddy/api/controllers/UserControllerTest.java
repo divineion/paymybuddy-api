@@ -61,7 +61,7 @@ public class UserControllerTest {
 		//THEN
 		mockMvc.perform(get("/api/user/{userId}", userId))
 		.andExpect(status().isNotFound())
-		.andExpect(jsonPath("$").doesNotExist());
+		.andExpect(jsonPath("$.status").exists());
 	}
 	
 	@Test
@@ -91,6 +91,6 @@ public class UserControllerTest {
 	    
 	    // THEN
 	    .andExpect(status().isNotFound())
-	    .andExpect(jsonPath("$").doesNotExist());
+	    .andExpect(jsonPath("$.status").exists());
 	}
 }
