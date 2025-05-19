@@ -1,7 +1,5 @@
 package com.paymybuddy.api.controllers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,45 +19,27 @@ import com.paymybuddy.api.services.user.UserService;
 
 @RestController
 public class UserController {
-	private static Logger logger = LogManager.getLogger(UserController.class);
 	@Autowired
-	UserService service;
+	private UserService service;
 	
 	@GetMapping("/api/user/{id}")
-	public ResponseEntity<UserDto> getUserById(@PathVariable int id) {
+	public ResponseEntity<UserDto> getUserById(@PathVariable int id) throws UserNotFoundException {
 		UserDto user;
-		try {
-			user = service.findUserById(id);
-			return ResponseEntity.ok(user);
-		} catch (UserNotFoundException e) {
-			return ResponseEntity.status(404).build();
-		}	
+		user = service.findUserById(id);
+		return ResponseEntity.ok(user);
 	}
 	
 	@GetMapping("/api/user/{id}/transfers")
-	public ResponseEntity<TransferPageDto> getTransferPage(@PathVariable int id) {
+	public ResponseEntity<TransferPageDto> getTransferPage(@PathVariable int id) throws UserNotFoundException {
 		TransferPageDto transferPageInfo;
-		try {
-			transferPageInfo = service.findUserTransferPageInfo(id);
-			return ResponseEntity.ok(transferPageInfo);
-		} catch(UserNotFoundException e) {
-			return ResponseEntity.status(404).build();
-		}
+		transferPageInfo = service.findUserTransferPageInfo(id);
+		return ResponseEntity.ok(transferPageInfo);
+
 	}
 	
 	@PutMapping("/api/user/{id}/add-relation")
-	public ResponseEntity<UserDto> createRelation(@PathVariable int id, @RequestBody EmailRequestDto email) throws RelationAlreadyExistsException, UserNotFoundException {
-		try {
-			UserDto user = service.addBeneficiary(id, email);
-			return ResponseEntity.ok(user);
-		} catch (EmailNotFoundException e) {
-			return ResponseEntity.status(404).build();
-		} catch (SelfRelationException e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(400).build();
-		} catch (RelationAlreadyExistsException e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(409).build();
-		}
+	public ResponseEntity<UserDto> createRelation(@PathVariable int id, @RequestBody EmailRequestDto email) throws EmailNotFoundException, SelfRelationException, RelationAlreadyExistsException, UserNotFoundException  {
+		UserDto user = service.addBeneficiary(id, email);
+		return ResponseEntity.ok(user);
 	}
 }
