@@ -17,5 +17,8 @@
     	<Logger name="com.paymybuddy.api.config" additivity="false"  level="DEBUG">
     		<AppenderRef ref="REQUESTS_LOG"/>
     	</Logger>
+    	<Logger name="com.paymybuddy.api.exceptions" additivity="false" level="ERROR">
+    		<AppenderRef ref="REQUESTS_LOG"/>>
+    	</Logger>
     </Loggers>
 </Configuration>
