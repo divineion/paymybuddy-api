@@ -77,7 +77,7 @@ public class InitService {
 		if (transferRepository.count() == 0) {
 			logger.info("Inserting data into table transfer");
 			logger.info("Updating data in table user");
-			BigDecimal amount = new BigDecimal(180);
+			BigDecimal amount = new BigDecimal(18);
 			BigDecimal fees = new BigDecimal(0.005);
 
 			if (optUser1.isPresent() && optUser2.isPresent()) {
