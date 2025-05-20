@@ -28,6 +28,6 @@ public class TransactionFilter extends HttpFilter {
         logger.debug("Starting a transaction for request : {}", req.getRequestURI());
 
         chain.doFilter(request, response);
-        logger.debug("Committing a transaction for request : {}", req.getRequestURI());
+        logger.debug("Ending a transaction for request : {}", req.getRequestURI());
     }
 }
