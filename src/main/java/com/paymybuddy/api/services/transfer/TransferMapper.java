@@ -5,8 +5,10 @@ import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
 
 import com.paymybuddy.api.model.Transfer;
+import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.services.dto.BeneficiaryDto;
 import com.paymybuddy.api.services.dto.TransferDto;
+import com.paymybuddy.api.services.dto.TransferRequestDto;
 import com.paymybuddy.api.utils.AmountRounder;
 
 @Service
@@ -30,5 +32,9 @@ public class TransferMapper {
 
 		return new TransferDto(transfer.getId(), sender, receiver, transfer.getDescription(), amount,
 				transfer.getDate());
+	}
+
+	public Transfer fromTransferDtoToTransfer(TransferRequestDto transferReqDto, User sender, User receiver) {
+		return Transfer.forInitialData(sender, receiver, transferReqDto.description(), transferReqDto.amount());
 	}
 }
