@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.context.annotation.Profile;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,7 +44,7 @@ public class User {
 	@Column(nullable=false, length = 255)
 	private String password;
 	
-	@Column(name="active_email", unique=true, length = 100)
+	@Column(name="active_email", unique=true, length = 100, insertable=false, updatable=false)
 	private String activeEmail;
 	
 	@OneToMany(mappedBy="sender") //default lazy
@@ -76,6 +75,14 @@ public class User {
 	
 	public static User forInitialData(Integer id, String username, String email, BigDecimal balance, String password) {
 		return new User(id, username, email, balance, password);
+	}
+	
+	/**
+	 * Creates a lightweight User reference without password information.
+	 * This is intended for internal operations (like balance updates or lookups).
+	 */
+	public static User referenceOnly(int id, String username, String email, BigDecimal balance) {
+		return new User(id, username, email, balance, null);
 	}
 	
 	public Integer getId() {
@@ -170,9 +177,12 @@ public class User {
 	 * Sets the {@code activeEmail} field based on the entity's deletion status.
 	 * <p>
 	 * This method is automatically invoked by JPA/Hibernate before the entity is persisted
-	 * ({@code @PrePersist}) or updated ({@code @PreUpdate}), but only when the
-	 * Spring profile {@code hibernate-init} is active.
+	 * ({@code @PrePersist}) or updated ({@code @PreUpdate}).
 	 * </p>
+	 * It ensures that the {@code activeEmail} property is kept in sync with the current
+	 * {@code email} value when the entity is active, or set to {@code null} when the entity
+	 * is considered deleted.
+	 * This avoids stale values in the entity instance without requiring a refresh from the database.
 	 * <ul>
 	 *   <li>If {@code deletedAt} is {@code null}, the entity is considered active and
 	 *   {@code activeEmail} is set to the current {@code email} value.</li>
@@ -182,7 +192,6 @@ public class User {
 	 */
 	@PrePersist
 	@PreUpdate
-	@Profile("hibernate-init")
 	public void defineActiveEmail() {
 		if (this.deletedAt == null) {
 			this.activeEmail = email;
