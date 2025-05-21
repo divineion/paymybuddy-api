@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.ColumnDefault;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.paymybuddy.api.constants.ServiceFees;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -43,9 +43,9 @@ public class Transfer {
 	
 	@Column(nullable=false, precision = 10, scale = 3)
 	@ColumnDefault("0.005")
-	private BigDecimal fees = new BigDecimal("0.005");
+	private BigDecimal fees = ServiceFees.TRANSFER_FEES;
 
-	@Column(name="total_amount", precision=10, scale =2)
+	@Column(name="total_amount", precision=10, scale =2, insertable=false, updatable=false)
 	private BigDecimal totalAmount;
 
 	@Column(nullable = false, columnDefinition = "TIMESTAMP(0)")
@@ -116,10 +116,6 @@ public class Transfer {
 		return totalAmount;
 	}
 
-	public void setTotalAmount(BigDecimal totalAmount) {
-		this.totalAmount = totalAmount;
-	}
-
 	public LocalDateTime getDate() {
 		return date;
 	}
@@ -129,9 +125,9 @@ public class Transfer {
 	}
 	
 	//valeurs calculées pour les colonnes générées initialement par MySQL
+	// évite le NPE. La valeur est calculée avant l'insertion et est donc en mémoire dans l'instance
 	//https://www.baeldung.com/jpa-entity-lifecycle-events
 	@PrePersist
-	@PreUpdate
 	public void calculateTotalAmount() {
 		if (amount != null && fees != null) {
 			this.totalAmount = amount.add(amount.multiply(fees));
