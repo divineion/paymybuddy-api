@@ -14,6 +14,12 @@ import com.paymybuddy.api.model.dto.ApiError;
 public class GlobalControllerExceptionHandler {
 	private final static Logger logger = LogManager.getLogger(GlobalControllerExceptionHandler.class);
 	
+	@ExceptionHandler(value = EmailAlreadyExistsException.class)
+	public ResponseEntity<ApiError> handleEmailAlreadyExistsException(EmailAlreadyExistsException e) {
+		ApiError apiError = new ApiError(409, e.getMessage());
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
+	}
+	
 	@ExceptionHandler(value = UserNotFoundException.class)
 	public ResponseEntity<ApiError> handleUserNotFoundException(UserNotFoundException e) {
 		ApiError apiError = new ApiError(404, e.getMessage());

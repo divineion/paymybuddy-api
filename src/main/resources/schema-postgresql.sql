@@ -56,31 +56,31 @@ CREATE TABLE IF NOT EXISTS paymybuddy.user_beneficiary (
 -- Data for table paymybuddy.app_user
 -- -----------------------------------------------------
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Georgia', 'georgia@email.com', NULL::timestamp, 'georgia_password', 100.00
+SELECT 'Georgia', 'georgia@email.com', NULL::timestamp, '$2a$10$Lc2JhT8glUB8.hfGoRYGVuuDnL7RM8XXSLAQTYlmv5hlNkkE14BQu', 100.00
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'georgia@email.com'
 );
 
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Tanka', 'tanka@email.com', NULL::timestamp, 'tanka_password', 100.00
+SELECT 'Tanka', 'tanka@email.com', NULL::timestamp, '$2a$10$tOwIV5x8bXF/Xh5tkHkKmO153X8bSGkibFU21KK6oshF1R9mVS6KO', 100.00
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'tanka@email.com'
 ); 
 
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Bagheera', 'bagheera@email.com', NULL::timestamp, 'bagheera_password', 100.00
+SELECT 'Bagheera', 'bagheera@email.com', NULL::timestamp, '$2a$10$1CLQi6XqmrfmafzzfeO/jOhGfnY6F4vIk5lbyQh7aSKN7VS.0mIdi', 100.00
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'bagheera@email.com' 
 );
 
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Mania', 'mania@email.com', NULL::timestamp, 'mania_password', 100.00
+SELECT 'Mania', 'mania@email.com', NULL::timestamp, '$2a$10$OrZrQGi2o7nb1eRzZfgWFOdm9LksYYirAfjb3Agdf9if30eNWhEom', 100.00
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'mania@email.com' 
 );
 
 INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Jeena', 'jeena@email.com', NULL, 'jeena_password', 100.00
+SELECT 'Jeena', 'jeena@email.com', NULL, '$2a$10$E3MsEXGQJfKhtRwBWCQjoeOHrGXH2AqN15RhOjQu1GirCdMcNRrTG', 100.00
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'jeena@email.com' 
 );

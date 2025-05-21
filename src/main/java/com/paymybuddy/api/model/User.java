@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.context.annotation.Profile;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -165,10 +166,23 @@ public class User {
 		this.beneficiaries.remove(beneficiary);
 	}
 	
-	//valeurs calculées pour les colonnes générées initialement par MySQL
-	//https://www.baeldung.com/jpa-entity-lifecycle-events
+	/**
+	 * Sets the {@code activeEmail} field based on the entity's deletion status.
+	 * <p>
+	 * This method is automatically invoked by JPA/Hibernate before the entity is persisted
+	 * ({@code @PrePersist}) or updated ({@code @PreUpdate}), but only when the
+	 * Spring profile {@code hibernate-init} is active.
+	 * </p>
+	 * <ul>
+	 *   <li>If {@code deletedAt} is {@code null}, the entity is considered active and
+	 *   {@code activeEmail} is set to the current {@code email} value.</li>
+	 *   <li>If {@code deletedAt} is not null, the entity is considered deleted and
+	 *   {@code activeEmail} is set to {@code null}.</li>
+	 * </ul>
+	 */
 	@PrePersist
 	@PreUpdate
+	@Profile("hibernate-init")
 	public void defineActiveEmail() {
 		if (this.deletedAt == null) {
 			this.activeEmail = email;

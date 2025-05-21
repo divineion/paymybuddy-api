@@ -32,12 +32,15 @@ public class InitService {
 
 			// create and save users
 			User user1 = User.forInitialData(null, "Georgia", "georgia@email.com", initialBalance,
-					"any-hashed-password");
-			User user2 = User.forInitialData(null, "Tanka", "tanka@email.com", initialBalance, "any-hashed-password");
+					"$2a$10$Lc2JhT8glUB8.hfGoRYGVuuDnL7RM8XXSLAQTYlmv5hlNkkE14BQu");
+			User user2 = User.forInitialData(null, "Tanka", "tanka@email.com", initialBalance,
+					"$2a$10$tOwIV5x8bXF/Xh5tkHkKmO153X8bSGkibFU21KK6oshF1R9mVS6KO");
 			User user3 = User.forInitialData(null, "Bagheera", "bagheera@email.com", initialBalance,
-					"any-hashed-password");
-			User user4 = User.forInitialData(null, "Mania", "mania@email.com", initialBalance, "any-hashed-password");
-			User user5 = User.forInitialData(null, "Jeena", "jeena@email.com", initialBalance, "any-hashed-password");
+					"$2a$10$1CLQi6XqmrfmafzzfeO/jOhGfnY6F4vIk5lbyQh7aSKN7VS.0mIdi");
+			User user4 = User.forInitialData(null, "Mania", "mania@email.com", initialBalance,
+					"$2a$10$OrZrQGi2o7nb1eRzZfgWFOdm9LksYYirAfjb3Agdf9if30eNWhEom");
+			User user5 = User.forInitialData(null, "Jeena", "jeena@email.com", initialBalance,
+					"$2a$10$E3MsEXGQJfKhtRwBWCQjoeOHrGXH2AqN15RhOjQu1GirCdMcNRrTG");
 
 			userRepository.save(user1);
 			userRepository.save(user2);
