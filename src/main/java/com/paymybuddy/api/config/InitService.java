@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.paymybuddy.api.constants.ApiMessages;
+import com.paymybuddy.api.constants.ServiceFees;
 import com.paymybuddy.api.model.Transfer;
 import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.repositories.TransferRepository;
@@ -81,7 +83,6 @@ public class InitService {
 			logger.info("Inserting data into table transfer");
 			logger.info("Updating data in table user");
 			BigDecimal amount = new BigDecimal(18);
-			BigDecimal fees = new BigDecimal(0.005);
 
 			if (optUser1.isPresent() && optUser2.isPresent()) {
 				User user1 = optUser1.get();
@@ -89,10 +90,10 @@ public class InitService {
 
 				Transfer transfer = Transfer.forInitialData(user1, user2, "entrée parc aquatique", amount);
 
-				BigDecimal amountToDebit = amount.add(amount.multiply(fees));
+				BigDecimal amountToDebit = amount.add(amount.multiply(ServiceFees.TRANSFER_FEES));
 
 				if (amountToDebit.compareTo(user1.getBalance()) == 1) {
-					logger.error("The user account balance is insufficient for this transaction");
+					logger.error(ApiMessages.INSUFFICIENT_BALANCE);
 					throw new IllegalArgumentException("The user account balance is insufficient for this transaction");
 				}
 				user1.setBalance(user1.getBalance().subtract(amountToDebit));
