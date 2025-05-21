@@ -9,7 +9,7 @@ import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.services.dto.BeneficiaryDto;
 import com.paymybuddy.api.services.dto.TransferDto;
 import com.paymybuddy.api.services.dto.TransferRequestDto;
-import com.paymybuddy.api.utils.AmountRounder;
+import com.paymybuddy.api.utils.AmountUtils;
 
 @Service
 public class TransferMapper {
@@ -28,7 +28,7 @@ public class TransferMapper {
 		BeneficiaryDto receiver = new BeneficiaryDto(transfer.getReceiver().getId(),
 				transfer.getReceiver().getUsername());
 
-		BigDecimal amount = AmountRounder.round(transfer.getSender().getId() == userId ? transfer.getTotalAmount() : transfer.getAmount());
+		BigDecimal amount = AmountUtils.round(transfer.getSender().getId() == userId ? transfer.getTotalAmount() : transfer.getAmount());
 
 		return new TransferDto(transfer.getId(), sender, receiver, transfer.getDescription(), amount,
 				transfer.getDate());
