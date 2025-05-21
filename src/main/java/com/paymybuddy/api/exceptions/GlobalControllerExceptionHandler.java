@@ -17,6 +17,7 @@ public class GlobalControllerExceptionHandler {
 	@ExceptionHandler(value = EmailAlreadyExistsException.class)
 	public ResponseEntity<ApiError> handleEmailAlreadyExistsException(EmailAlreadyExistsException e) {
 		ApiError apiError = new ApiError(409, e.getMessage());
+		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
 	}
 	
@@ -44,6 +45,13 @@ public class GlobalControllerExceptionHandler {
 	@ExceptionHandler
 	public ResponseEntity<ApiError> handleRelationAlreadyExistsException(RelationAlreadyExistsException e) {
 		ApiError apiError = new ApiError(409, e.getMessage());
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleInsufficientBalanceException(InsufficientBalanceException e) {
+		ApiError apiError = new ApiError(400, e.getMessage());
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
 	}
