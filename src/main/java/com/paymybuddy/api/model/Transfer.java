@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.ColumnDefault;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.paymybuddy.api.constants.ServiceFees;
+import com.paymybuddy.api.constants.TransferSettings;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,7 +43,7 @@ public class Transfer {
 	
 	@Column(nullable=false, precision = 10, scale = 3)
 	@ColumnDefault("0.005")
-	private BigDecimal fees = ServiceFees.TRANSFER_FEES;
+	private BigDecimal fees = TransferSettings.TRANSFER_FEES;
 
 	@Column(name="total_amount", precision=10, scale =2, insertable=false, updatable=false)
 	private BigDecimal totalAmount;
