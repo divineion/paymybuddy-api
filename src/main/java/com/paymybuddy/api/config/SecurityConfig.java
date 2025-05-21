@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration // indiquera à Spring qu'il y a des beans dans la classe
 @EnableWebSecurity //permet de configurer des éléments de sécurity
@@ -18,5 +20,10 @@ public class SecurityConfig {
 	                    .anyRequest().permitAll()
 	                )
 	            .build();
+	}
+	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+	    return new BCryptPasswordEncoder();
 	}
 }
