@@ -4,8 +4,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.paymybuddy.api.constants.ApiMessages;
+import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
@@ -15,6 +17,7 @@ import com.paymybuddy.api.model.dto.BeneficiaryDto;
 import com.paymybuddy.api.model.dto.EmailRequestDto;
 import com.paymybuddy.api.model.dto.TransferDto;
 import com.paymybuddy.api.model.dto.TransferPageDto;
+import com.paymybuddy.api.model.dto.UserAccountDto;
 import com.paymybuddy.api.model.dto.UserDto;
 import com.paymybuddy.api.repositories.UserRepository;
 import com.paymybuddy.api.services.transfer.TransferMapper;
@@ -33,6 +36,19 @@ public class UserService {
 		this.mapper = mapper;
 		this.transferMapper = transferMapper;
 		this.validator = validator;
+	}
+	
+
+	@Transactional(rollbackFor = Exception.class)
+	public UserDto registerNewUserAccount(UserAccountDto accountDto) throws EmailAlreadyExistsException {
+	    if (userRepository.findByActiveEmail(accountDto.email()).isPresent()) {
+	        throw new EmailAlreadyExistsException(ApiMessages.EMAIL_ALREADY_EXISTS + accountDto.email());
+	    }
+	    
+	    User newUser = mapper.fromUserAccountDtoToUser(accountDto);
+	    userRepository.save(newUser);
+	    
+	    return mapper.fromUserToUserDto(newUser);	    
 	}
 
 	public UserDto findUserById(int id) throws UserNotFoundException {
