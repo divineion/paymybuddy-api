@@ -91,35 +91,35 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- -----------------------------------------------------
 -- -----------------------------------------------------
 INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) 
-SELECT * FROM (SELECT 'Georgia', 'georgia@email.com', NULL, 'georgia_password', 100.00) AS tmp
+SELECT * FROM (SELECT 'Georgia', 'georgia@email.com', NULL, '$2a$10$Lc2JhT8glUB8.hfGoRYGVuuDnL7RM8XXSLAQTYlmv5hlNkkE14BQu', 100.00) AS tmp
 WHERE NOT EXISTS(
 	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'georgia@email.com'
 	)
 LIMIT 1;
 
 INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) 
-SELECT * FROM (SELECT 'Tanka', 'tanka@email.com', NULL, 'tanka_password', 100.00) AS tmp
+SELECT * FROM (SELECT 'Tanka', 'tanka@email.com', NULL, '$2a$10$tOwIV5x8bXF/Xh5tkHkKmO153X8bSGkibFU21KK6oshF1R9mVS6KO', 100.00) AS tmp
 WHERE NOT EXISTS (
 	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'tanka@email.com'
 )
 LIMIT 1;
 
 INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`)
-SELECT * FROM (SELECT 'Bagheera', 'bagheera@email.com', NULL, 'bagheera_password', 100.00) AS tmp
+SELECT * FROM (SELECT 'Bagheera', 'bagheera@email.com', NULL, '$2a$10$1CLQi6XqmrfmafzzfeO/jOhGfnY6F4vIk5lbyQh7aSKN7VS.0mIdi', 100.00) AS tmp
 WHERE NOT EXISTS (
 	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'bagheera@gmail.com'
 )
 LIMIT 1;
 
 INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`)
-SELECT * FROM (SELECT 'Mania', 'mania@email.com', NULL, 'mania_password', 100.00) AS tmp
+SELECT * FROM (SELECT 'Mania', 'mania@email.com', NULL, '$2a$10$OrZrQGi2o7nb1eRzZfgWFOdm9LksYYirAfjb3Agdf9if30eNWhEom', 100.00) AS tmp
 WHERE NOT EXISTS (
 	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'mania@gmail.com'
 )
 LIMIT 1;
 
 INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`)
-SELECT * FROM (SELECT 'Jeena', 'jeena@email.com', NULL, 'jeena_password', 100.00) AS tmp
+SELECT * FROM (SELECT 'Jeena', 'jeena@email.com', NULL, '$2a$10$E3MsEXGQJfKhtRwBWCQjoeOHrGXH2AqN15RhOjQu1GirCdMcNRrTG', 100.00) AS tmp
 WHERE NOT EXISTS (
 	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'jeena@gmail.com'
 )
