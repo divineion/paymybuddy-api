@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.paymybuddy.api.model.dto.ApiError;
+import com.paymybuddy.api.services.dto.ApiError;
 
 @ControllerAdvice(annotations = RestController.class)
 public class GlobalControllerExceptionHandler {

@@ -5,9 +5,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.paymybuddy.api.model.User;
-import com.paymybuddy.api.model.dto.BeneficiaryDto;
-import com.paymybuddy.api.model.dto.UserAccountDto;
-import com.paymybuddy.api.model.dto.UserDto;
+import com.paymybuddy.api.services.dto.BeneficiaryDto;
+import com.paymybuddy.api.services.dto.UserAccountDto;
+import com.paymybuddy.api.services.dto.UserDto;
 
 @Service
 public class UserMapper {

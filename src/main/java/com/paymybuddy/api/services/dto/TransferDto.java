@@ -1,4 +1,4 @@
-package com.paymybuddy.api.model.dto;
+package com.paymybuddy.api.services.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
 
 import com.paymybuddy.api.model.Transfer;
-import com.paymybuddy.api.model.dto.BeneficiaryDto;
-import com.paymybuddy.api.model.dto.TransferDto;
+import com.paymybuddy.api.services.dto.BeneficiaryDto;
+import com.paymybuddy.api.services.dto.TransferDto;
 import com.paymybuddy.api.utils.AmountRounder;
 
 @Service

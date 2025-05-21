@@ -13,13 +13,13 @@ import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.model.User;
-import com.paymybuddy.api.model.dto.BeneficiaryDto;
-import com.paymybuddy.api.model.dto.EmailRequestDto;
-import com.paymybuddy.api.model.dto.TransferDto;
-import com.paymybuddy.api.model.dto.TransferPageDto;
-import com.paymybuddy.api.model.dto.UserAccountDto;
-import com.paymybuddy.api.model.dto.UserDto;
 import com.paymybuddy.api.repositories.UserRepository;
+import com.paymybuddy.api.services.dto.BeneficiaryDto;
+import com.paymybuddy.api.services.dto.EmailRequestDto;
+import com.paymybuddy.api.services.dto.TransferDto;
+import com.paymybuddy.api.services.dto.TransferPageDto;
+import com.paymybuddy.api.services.dto.UserAccountDto;
+import com.paymybuddy.api.services.dto.UserDto;
 import com.paymybuddy.api.services.transfer.TransferMapper;
 
 @Service
