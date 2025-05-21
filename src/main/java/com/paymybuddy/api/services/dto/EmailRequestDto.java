@@ -1,3 +1,3 @@
-package com.paymybuddy.api.model.dto;
+package com.paymybuddy.api.services.dto;
 
 public record EmailRequestDto(String email) {}

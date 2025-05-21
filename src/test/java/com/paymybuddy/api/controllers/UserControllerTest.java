@@ -16,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.paymybuddy.api.config.SecurityConfig;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
-import com.paymybuddy.api.model.dto.TransferPageDto;
-import com.paymybuddy.api.model.dto.UserDto;
+import com.paymybuddy.api.services.dto.TransferPageDto;
+import com.paymybuddy.api.services.dto.UserDto;
 import com.paymybuddy.api.services.user.UserService;
 //https://www.baeldung.com/spring-mockmvc-vs-webmvctest
 @Import(SecurityConfig.class)
