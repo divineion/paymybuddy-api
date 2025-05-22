@@ -21,7 +21,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	List<User> findBeneficiariesById(@Param("id") int id);
 	
 	@Query("select count(u) > 0 ub from User u JOIN u.beneficiaries ub WHERE u.id = :currentUserId AND ub.id = :targetUserId")
-	boolean beneficiaryAlreadyExists(@Param("currentUserId") int currentUserId, @Param("targetUserId") int targetUserId);
+	boolean beneficiaryExists(@Param("currentUserId") int currentUserId, @Param("targetUserId") int targetUserId);
 	
 	@Modifying
 	@Query("update User u set u.balance = :balance where u.id = :id")
