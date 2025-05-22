@@ -34,7 +34,7 @@ public class TransferMapper {
 				transfer.getDate());
 	}
 
-	public Transfer fromTransferDtoToTransfer(TransferRequestDto transferReqDto, User sender, User receiver) {
+	public Transfer fromTransferRequestDtoToTransfer(TransferRequestDto transferReqDto, User sender, User receiver) {
 		return Transfer.forInitialData(sender, receiver, transferReqDto.description(), transferReqDto.amount());
 	}
 }
