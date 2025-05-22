@@ -22,11 +22,11 @@ USE `paymybuddy` ;
 CREATE TABLE IF NOT EXISTS `paymybuddy`.`app_user` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(50) NOT NULL,
-  `email` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(100) NOT NULL,
   `deleted_at` TIMESTAMP NULL DEFAULT NULL,
   `password` VARCHAR(255) NOT NULL,
   `balance` DECIMAL(10,2) UNSIGNED NOT NULL,
-  `active_email` VARCHAR(255) GENERATED ALWAYS AS (CASE WHEN deleted_at IS NULL THEN email ELSE NULL END) STORED,
+  `active_email` VARCHAR(100) GENERATED ALWAYS AS (CASE WHEN deleted_at IS NULL THEN email ELSE NULL END) STORED,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `active_email_UNIQUE` (`active_email` ASC));
 

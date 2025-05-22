@@ -94,7 +94,7 @@ public class UserService {
 	// busines validation (no duplicates, no self relation
 	// add the target user as beneficiary
 
-	public UserDto addBeneficiary(int currentUserId, EmailRequestDto emailDto) throws EmailNotFoundException,
+	public BeneficiaryDto addBeneficiary(int currentUserId, EmailRequestDto emailDto) throws EmailNotFoundException,
 			SelfRelationException, RelationAlreadyExistsException, UserNotFoundException {
 		String email = emailDto.email();
 		User currentUser = userRepository.findById(currentUserId)
@@ -110,7 +110,7 @@ public class UserService {
 		}
 		
 
-		return mapper.fromUserToUserDto(targetUser);
+		return mapper.fromUserToBeneficiaryDto(targetUser);
 	}
 
 	public boolean relationAlreadyExists(int currentUserId, User targetUser) throws RelationAlreadyExistsException {

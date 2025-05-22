@@ -19,7 +19,7 @@ public class UserMapper {
     }
 	
 	public UserDto fromUserToUserDto(User user) {
-		return new UserDto(user.getId(), user.getUsername(), user.getEmail());
+		return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getBalance());
 	}
 	
 	public BeneficiaryDto fromUserToBeneficiaryDto(User user) {
@@ -28,5 +28,9 @@ public class UserMapper {
 
 	public User fromUserAccountDtoToUser(UserAccountDto accountDto) {
 		return User.forInitialData(null, accountDto.username(), accountDto.email(), BigDecimal.ZERO, passwordEncoder.encode(accountDto.password()));
+	}
+
+	public User fromUserDtoToUser(UserDto sender) {
+		return User.referenceOnly(sender.id(), sender.username(), sender.email(), sender.balance());
 	}
 }

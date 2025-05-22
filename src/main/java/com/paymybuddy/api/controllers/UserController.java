@@ -14,6 +14,7 @@ import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
+import com.paymybuddy.api.services.dto.BeneficiaryDto;
 import com.paymybuddy.api.services.dto.EmailRequestDto;
 import com.paymybuddy.api.services.dto.TransferPageDto;
 import com.paymybuddy.api.services.dto.UserAccountDto;
@@ -46,9 +47,10 @@ public class UserController {
 		return ResponseEntity.ok(newUser);
 	}
 	
+	//return beneficiarydto since the UserDto contains user balance
 	@PutMapping("/api/user/{id}/add-relation")
-	public ResponseEntity<UserDto> createRelation(@PathVariable int id, @RequestBody EmailRequestDto email) throws EmailNotFoundException, SelfRelationException, RelationAlreadyExistsException, UserNotFoundException  {
-		UserDto user = service.addBeneficiary(id, email);
+	public ResponseEntity<BeneficiaryDto> createRelation(@PathVariable int id, @RequestBody EmailRequestDto email) throws EmailNotFoundException, SelfRelationException, RelationAlreadyExistsException, UserNotFoundException  {
+		BeneficiaryDto user = service.addBeneficiary(id, email);
 		return ResponseEntity.ok(user);
 	}
 }
