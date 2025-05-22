@@ -1,7 +1,6 @@
 package com.paymybuddy.api.exceptions;
 
 public class EmailNotFoundException extends Exception {
-
 	/**
 	 * 
 	 */

@@ -10,6 +10,7 @@ import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
+import com.paymybuddy.api.exceptions.RelationNotFoundException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.model.User;
@@ -37,18 +38,17 @@ public class UserService {
 		this.transferMapper = transferMapper;
 		this.validator = validator;
 	}
-	
 
 	@Transactional(rollbackFor = Exception.class)
 	public UserDto registerNewUserAccount(UserAccountDto accountDto) throws EmailAlreadyExistsException {
-	    if (userRepository.findByActiveEmail(accountDto.email()).isPresent()) {
-	        throw new EmailAlreadyExistsException(ApiMessages.EMAIL_ALREADY_EXISTS + accountDto.email());
-	    }
-	    
-	    User newUser = mapper.fromUserAccountDtoToUser(accountDto);
-	    userRepository.save(newUser);
-	    
-	    return mapper.fromUserToUserDto(newUser);	    
+		if (userRepository.findByActiveEmail(accountDto.email()).isPresent()) {
+			throw new EmailAlreadyExistsException(ApiMessages.EMAIL_ALREADY_EXISTS + accountDto.email());
+		}
+
+		User newUser = mapper.fromUserAccountDtoToUser(accountDto);
+		userRepository.save(newUser);
+
+		return mapper.fromUserToUserDto(newUser);
 	}
 
 	public UserDto findUserById(int id) throws UserNotFoundException {
@@ -94,6 +94,22 @@ public class UserService {
 	// busines validation (no duplicates, no self relation
 	// add the target user as beneficiary
 
+	/**
+	 * Adds a beneficiary to the current user's list.
+	 * 
+	 * Steps:
+	 * 1. Check if the email provided exists in the system.
+	 * 2. Perform business validations (no duplicate relations, cannot add oneself).
+	 * 3. Add the target user as a beneficiary if not already added.
+	 * 
+	 * @param currentUserId the ID of the user adding the beneficiary
+	 * @param emailDto contains the email address of the beneficiary to add
+	 * @return a {@link BeneficiaryDto} representing the added beneficiary
+	 * @throws EmailNotFoundException if the email does not match any user
+	 * @throws SelfRelationException if the user tries to add themselves
+	 * @throws RelationAlreadyExistsException if the beneficiary is already added
+	 * @throws UserNotFoundException if the current user does not exist
+	 */
 	public BeneficiaryDto addBeneficiary(int currentUserId, EmailRequestDto emailDto) throws EmailNotFoundException,
 			SelfRelationException, RelationAlreadyExistsException, UserNotFoundException {
 		String email = emailDto.email();
@@ -109,14 +125,46 @@ public class UserService {
 			userRepository.save(currentUser);
 		}
 		
-
 		return mapper.fromUserToBeneficiaryDto(targetUser);
 	}
 
 	public boolean relationAlreadyExists(int currentUserId, User targetUser) throws RelationAlreadyExistsException {
-		if (userRepository.beneficiaryAlreadyExists(currentUserId, targetUser.getId())) {
+		if (userRepository.beneficiaryExists(currentUserId, targetUser.getId())) {
 			throw new RelationAlreadyExistsException(ApiMessages.RELATION_ALREADY_EXISTS + targetUser.getActiveEmail());
 		}
 		return false;
+	}
+
+	/**
+	 * Removes a beneficiary from the current user's list.
+	 * 
+	 * Steps: 
+	 * 1. Check that the current user exists.
+	 * 2. Check that the beneficiary exists.
+	 * 3. Verify that the beneficiary is actually in the current user's list.
+	 * 4. Remove the beneficiary from the user's beneficiaries. 
+	 * 
+	 * @param id the ID of the current user
+	 * @param beneficiaryId the ID of the beneficiary to remove
+	 * @throws RelationNotFoundException if the beneficiary is not in the user's list
+	 * @throws UserNotFoundException if either the current user or beneficiary does not exist
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void removeBeneficiary(int id, int beneficiaryId) throws RelationNotFoundException, UserNotFoundException {
+		User currentUser = userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
+		User beneficiary = userRepository.findById(beneficiaryId)
+				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
+
+		if (!userRepository.beneficiaryExists(id, beneficiaryId)) {
+			throw new RelationNotFoundException(
+					"User with ID " + beneficiaryId + " is not a beneficiary of user with ID " + id + ".");
+		}
+
+		if (userRepository.findBeneficiariesById(id).stream()
+				.anyMatch(b -> b.getId().equals(beneficiaryId))) {
+			currentUser.removeBeneficiary(beneficiary);
+			userRepository.save(currentUser);
+		}
 	}
 }
