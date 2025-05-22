@@ -62,5 +62,11 @@ public class GlobalControllerExceptionHandler {
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
 	}
-
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleRelationNotFoundException(RelationNotFoundException e) {
+		ApiError apiError = new ApiError(400, e.getMessage());
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
 }
