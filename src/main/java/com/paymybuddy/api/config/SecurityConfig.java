@@ -2,6 +2,7 @@ package com.paymybuddy.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,11 +16,13 @@ public class SecurityConfig {
 	@Bean // enregistre la valeur de retour en tant que Bean 
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http
-	            .csrf().disable()
-	            .authorizeHttpRequests(auth -> auth
-	                    .anyRequest().permitAll()
-	                )
-	            .build();
+                .csrf(csrf -> csrf.disable())
+                // méthode  requestMatchers()  pour définir l'association des rôles  USER  (utilisateur) et ADMIN  (administrateur) avec des pages
+                .authorizeHttpRequests(auth -> {
+                    auth.anyRequest().authenticated();
+                })
+                .formLogin(Customizer.withDefaults())
+                .build();
 	}
 	
 	@Bean
