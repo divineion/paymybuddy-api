@@ -12,4 +12,6 @@ public class ApiMessages {
 	
 	public static final String INSUFFICIENT_BALANCE = "The user account balance is insufficient for this transaction.";
 	public static final String INSUFFICIENT_AMOUNT = "The transfered amount cannot be less than 1€.";
+
+	public static final String INVALID_CREDENTIALS = "Invalid credentials";
 }
