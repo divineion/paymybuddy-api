@@ -16,41 +16,41 @@ Le diagramme EER ci-dessous décrit la structure des tables et les relations ent
 ![alt text](paymybuddy.png)
 
 ### Tables :
-- **user** : contient les informations sur les utilisateurs.<br>  
-*id* : identifiant unique de l'utilisateur,<br>
-*username* : nom d'utilisateur,<br>
-*email* : adresse e-mail (ne peut pas être partagée entre plusieurs utilisateurs),<br>
-*password* : mot de passe,<br>
-*balance* : solde du compte en euros (ne peut pas être négatif),<br>
-*deleted_at* : date de suppression du compte (soft-delete),<br>
-*active_email* : colonne calculée dynamiquement à partir des champs èmail`et `deleted_at` pour contenir l'adresse e-mail d'un utilisateur actif. Si le compte de l'utilisateur a été supprimé, un nouveau compte avec la même adresse e-mail peut être créé.<br>
+- **user** : contient les informations sur les utilisateurs.    
+*id* : identifiant unique de l'utilisateur, auto-incrémenté   
+*username* : nom d'utilisateur,   
+*email* : adresse e-mail (ne peut pas être partagée entre plusieurs utilisateurs),   
+*password* : mot de passe,   
+*balance* : solde du compte en euros (ne peut pas être négatif),   
+*deleted_at* : date de suppression du compte (soft-delete),   
+*active_email* : colonne calculée dynamiquement à partir des champs `email` et `deleted_at` pour contenir l'adresse e-mail d'un utilisateur actif. Si le compte de l'utilisateur a été supprimé, un nouveau compte avec la même adresse e-mail peut être créé.    
 
 **Le champ `active_email` permet de conserver l'unicité de l'adresse e-mail uniquement parmi les comptes utilisateurs actifs** (non supprimés).   
    
-- **transfer** : enregistre les transferts entre utilisateurs.<br>  
-*id* : identifiant unique de la transaction,<br>
-*sender* : identifiant de l'utilisateur qui envoie de l'argent,<br>
-*receiver* : identifiant de l'utilisateur qui reçoit de l'argent,<br>
-*description* : description de la transaction qui permet de renseigner un motif,
-*amount_excluding_fees* : montant hors frais de la transaction : c'est le montant qui sera versé au bénéficiaire,
-*fees* : frais de service appliqués à chaque transaction (par défaut : 0,5%),
-*total_amount* : montant total de la transaction (par défaut, le montant versé au bénéficiaire + les frais).<br>
+- **transfer** : enregistre les transferts entre utilisateurs.   
+*id* : identifiant unique de la transaction, auto-incrémenté,   
+*sender* : identifiant de l'utilisateur qui envoie de l'argent,   
+*receiver* : identifiant de l'utilisateur qui reçoit de l'argent,   
+*description* : description de la transaction qui permet de renseigner un motif,   
+*amount_excluding_fees* : montant hors frais de la transaction : c'est le montant qui sera versé au bénéficiaire,   
+*fees* : frais de service appliqués à chaque transaction (par défaut : 0,5%),   
+*total_amount* : montant total de la transaction (par défaut, le montant versé au bénéficiaire + les frais).     
   
 Les transferts sont liés aux utilisateurs via les clés étrangères `sender` et `receiver` qui font référence à `user.id`. 
    
-- **user_beneficiary** : gère les relations entre utilisateurs.<br>  
-*user_id* : identifiant de l'utilisateur qui a ajouté un bénéficiaire,<br>
-*beneficiary_id* : identifiant de l'utilisateur ajouté aux bénéficiaires (la réciprocité n'est pas obligatoire).<br>
+- **user_beneficiary** : gère les relations entre utilisateurs.     
+*user_id* : identifiant de l'utilisateur qui a ajouté un bénéficiaire,   
+*beneficiary_id* : identifiant de l'utilisateur ajouté aux bénéficiaires (la réciprocité n'est pas obligatoire).   
    
-Les relations entre utilisateurs sont gérées via les clés étrangères `user_id` et `beneficiary_id` qui font toutes deux référence à `user.id`.<br>
-La table `user_beneficiary` contient ainsi uniquement des associations entre identifiants d'utilisateurs.<br>
-**Chaque couple (user_id, beneficiary_id) est unique** : un même bénéficiaire ne peut pas être ajouté plusieurs fois par le même utilisateur.<br>
+Les relations entre utilisateurs sont gérées via les clés étrangères `user_id` et `beneficiary_id` qui font toutes deux référence à `user.id`.   
+La table `user_beneficiary` contient ainsi uniquement des associations entre identifiants d'utilisateurs.   
+**Chaque couple (user_id, beneficiary_id) est unique** : un même bénéficiaire ne peut pas être ajouté plusieurs fois par le même utilisateur.   
 
 ### Initialisation du schéma de la base de données et données initiales
 
 #### Avec script SQL
 
-La configuration courante du projet dans [application.properties](src/main/resources/application.properties) est définie sur `mysql`.
+La configuration courante du projet dans [application.properties](src/main/resources/application.properties) est définie sur `mysql`.   
 [Le schéma](src/main/resources/schema-mysql.sql), conçu pour être utilisé avec MySQL, contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), et un **jeu de données initial**.
 
 [Une version PostgreSQL du schéma](src/main/resources/schema-postgresql.sql) initial peut être initialisée en définissant le profil `postgresql`.
@@ -60,17 +60,16 @@ Une fois l'application lancée et les données initialisées via le schéma SQL,
 `spring.sql.init.mode=never`   
 `spring.jpa.hibernate.ddl-auto=update`
 
-#### Avec Hibernate
+### Génération des clés secrètes JWT
+L'authentification JWT est signée via une paire de clés secrètes.   
+  
+Générer une clé privée : <code>openssl genrsa -out private_key.pem 2048</code>   
+Génerer la clé publique correspondante : <code>openssl rsa -pubout -in private_key.pem -out public_key.pem</code>   
 
-Le schéma de la base de données peut également être généré automatiquement par Hibernate au démarrage de l'application, sur la base des entités JPA du projet, en définissant le profil sur `hibernate-init`. 
+Les deux fichiers doivent être placés dans dans src/main/resources/jwt-keys/.
 
-La base de données doit être créée avant le démarrage de l'application. 
-Le premier démarrage de l'application entraîne la génération du schéma de données et l'insertion de données. 
 
-### Création de la base de données
 
-Avec MySQL ou PostgreSQL : 
-<code>CREATE DATABASE paymybuddy;</code>
 
 ### Démarrage de l'application
 
