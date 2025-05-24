@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### RSA key ###
+src/main/resources/jwt-keys/public_key.pem
+src/main/resources/jwt-keys/private_key.pem
+
 ### SQL data initialization files ###
 docs/mysql/data.sql
 docs/postgresql/data.sql
