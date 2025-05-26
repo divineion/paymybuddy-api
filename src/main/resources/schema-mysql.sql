@@ -15,6 +15,18 @@ DROP SCHEMA IF EXISTS `paymybuddy`;
 CREATE SCHEMA IF NOT EXISTS `paymybuddy` DEFAULT CHARACTER SET utf8 ;
 USE `paymybuddy` ;
 
+
+-- -----------------------------------------------------
+-- Table `paymybuddy`.`app_role`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `paymybuddy`.`role` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC)
+  );
+
 -- -----------------------------------------------------
 -- Table `paymybuddy`.`app_user`
 -- -----------------------------------------------------
@@ -27,9 +39,12 @@ CREATE TABLE IF NOT EXISTS `paymybuddy`.`app_user` (
   `password` VARCHAR(255) NOT NULL,
   `balance` DECIMAL(10,2) UNSIGNED NOT NULL,
   `active_email` VARCHAR(100) GENERATED ALWAYS AS (CASE WHEN deleted_at IS NULL THEN email ELSE NULL END) STORED,
+  `role` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
+  CONSTRAINT `fk_user_role` 
+  FOREIGN KEY (`role`)
+  REFERENCES `paymybuddy`.`role` (`id`),
   UNIQUE INDEX `active_email_UNIQUE` (`active_email` ASC));
-
 
 -- -----------------------------------------------------
 -- Table `paymybuddy`.`transfer`
@@ -87,41 +102,46 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -- -----------------------------------------------------
+-- Data for table `paymybuddy`.`role`
+-- -----------------------------------------------------
+INSERT INTO `role` (id, name) VALUES (1, 'ROLE_USER'), (2, 'ROLE_ADMIN');
+
+
+-- -----------------------------------------------------
 -- Data for table `paymybuddy`.`app_user`
 -- -----------------------------------------------------
--- -----------------------------------------------------
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) 
-SELECT * FROM (SELECT 'Georgia', 'georgia@email.com', NULL, '$2a$10$Lc2JhT8glUB8.hfGoRYGVuuDnL7RM8XXSLAQTYlmv5hlNkkE14BQu', 100.00) AS tmp
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`, `role`) 
+SELECT * FROM (SELECT 'Georgia', 'georgia@email.com', NULL, '$2a$10$Lc2JhT8glUB8.hfGoRYGVuuDnL7RM8XXSLAQTYlmv5hlNkkE14BQu', 100.00, 1) AS tmp
 WHERE NOT EXISTS(
 	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'georgia@email.com'
 	)
 LIMIT 1;
 
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`) 
-SELECT * FROM (SELECT 'Tanka', 'tanka@email.com', NULL, '$2a$10$tOwIV5x8bXF/Xh5tkHkKmO153X8bSGkibFU21KK6oshF1R9mVS6KO', 100.00) AS tmp
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`, `role`) 
+SELECT * FROM (SELECT 'Tanka', 'tanka@email.com', NULL, '$2a$10$tOwIV5x8bXF/Xh5tkHkKmO153X8bSGkibFU21KK6oshF1R9mVS6KO', 100.00, 1) AS tmp
 WHERE NOT EXISTS (
 	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'tanka@email.com'
 )
 LIMIT 1;
 
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`)
-SELECT * FROM (SELECT 'Bagheera', 'bagheera@email.com', NULL, '$2a$10$1CLQi6XqmrfmafzzfeO/jOhGfnY6F4vIk5lbyQh7aSKN7VS.0mIdi', 100.00) AS tmp
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`, `role`)
+SELECT * FROM (SELECT 'Bagheera', 'bagheera@email.com', NULL, '$2a$10$1CLQi6XqmrfmafzzfeO/jOhGfnY6F4vIk5lbyQh7aSKN7VS.0mIdi', 100.00, 1) AS tmp
 WHERE NOT EXISTS (
-	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'bagheera@gmail.com'
+	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'bagheera@email.com'
 )
 LIMIT 1;
 
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`)
-SELECT * FROM (SELECT 'Mania', 'mania@email.com', NULL, '$2a$10$OrZrQGi2o7nb1eRzZfgWFOdm9LksYYirAfjb3Agdf9if30eNWhEom', 100.00) AS tmp
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`, `role`)
+SELECT * FROM (SELECT 'Mania', 'mania@email.com', NULL, '$2a$10$OrZrQGi2o7nb1eRzZfgWFOdm9LksYYirAfjb3Agdf9if30eNWhEom', 100.00, 1) AS tmp
 WHERE NOT EXISTS (
-	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'mania@gmail.com'
+	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'mania@email.com'
 )
 LIMIT 1;
 
-INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`)
-SELECT * FROM (SELECT 'Jeena', 'jeena@email.com', NULL, '$2a$10$E3MsEXGQJfKhtRwBWCQjoeOHrGXH2AqN15RhOjQu1GirCdMcNRrTG', 100.00) AS tmp
+INSERT INTO `paymybuddy`.`app_user` (`username`, `email`, `deleted_at`, `password`, `balance`, `role`)
+SELECT * FROM (SELECT 'Jeena', 'jeena@email.com', NULL, '$2a$10$E3MsEXGQJfKhtRwBWCQjoeOHrGXH2AqN15RhOjQu1GirCdMcNRrTG', 100.00, 1) AS tmp
 WHERE NOT EXISTS (
-	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'jeena@gmail.com'
+	SELECT 1 FROM `paymybuddy`.`app_user` WHERE active_email = 'jeena@email.com'
 )
 LIMIT 1;
 
