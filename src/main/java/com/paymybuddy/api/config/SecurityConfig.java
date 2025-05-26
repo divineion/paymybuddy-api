@@ -38,10 +38,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))        
         		// méthode  requestMatchers()  pour définir l'association des rôles  USER  (utilisateur) et ADMIN  (administrateur) avec des pages
                 .authorizeHttpRequests(auth -> {
-                	auth.requestMatchers("/login_check").authenticated();
+                	auth.requestMatchers("/login_check").permitAll();
+                    auth.requestMatchers("/api/**").authenticated();
                 })
-                // https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/builders/HttpSecurity.html#httpBasic(org.springframework.security.config.Customizer)
-                .httpBasic(Customizer.withDefaults())
+                // activer OAuth2 et le support jwt
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())) 
                 .build();
 	}
 	
@@ -52,7 +53,6 @@ public class SecurityConfig {
 	
 	//cofngiruer l'encoder et le decoder
 	//injecter les clés à partir de RsaKeyConfig
-	
 	// injecter la clé publique retournée par la méthode bean déclarée dans RsaKeyConfig
 	@Bean
 	JwtDecoder jwtDecoder(RSAPublicKey publicKey) {

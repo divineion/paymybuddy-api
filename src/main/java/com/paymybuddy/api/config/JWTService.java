@@ -25,7 +25,8 @@ public class JWTService {
 		JwtClaimsSet claims = JwtClaimsSet.builder()
 				.issuer("paymybuddy-api")
 				.issuedAt(now)
-				.expiresAt(now.plus(1, ChronoUnit.HOURS))
+				//TODO expiration 1 DAY
+				.expiresAt(now.plus(10, ChronoUnit.DAYS))
 				.subject(auth.getName()) // email
 				.build();
 		
