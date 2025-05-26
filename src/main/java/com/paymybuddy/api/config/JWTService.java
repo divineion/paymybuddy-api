@@ -3,7 +3,6 @@ package com.paymybuddy.api.config;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -19,15 +18,16 @@ public class JWTService {
 		this.jwtEncoder = jwtEncoder;  
 	}
 	
-	public String generateToken(Authentication auth) {
+	public String generateToken(CustomUserDetails user) {
 		Instant now = Instant.now();
-		// définir le payload
+				// définir le payload
 		JwtClaimsSet claims = JwtClaimsSet.builder()
 				.issuer("paymybuddy-api")
 				.issuedAt(now)
 				//TODO expiration 1 DAY
 				.expiresAt(now.plus(10, ChronoUnit.DAYS))
-				.subject(auth.getName()) // email
+				.subject(user.getUsername()) // email
+				.claim("id", user.getId())
 				.build();
 		
 		JwtEncoderParameters parameters = JwtEncoderParameters.from(
