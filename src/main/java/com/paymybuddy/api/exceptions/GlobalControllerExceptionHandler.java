@@ -4,10 +4,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.services.dto.ApiError;
 
 @ControllerAdvice(annotations = RestController.class)
@@ -68,5 +70,12 @@ public class GlobalControllerExceptionHandler {
 		ApiError apiError = new ApiError(400, e.getMessage());
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleBadCredentialsException(BadCredentialsException e) {
+		ApiError apiError = new ApiError(401, ApiMessages.INVALID_CREDENTIALS);
+		logger.error(ApiMessages.INVALID_CREDENTIALS);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
 	}
 }
