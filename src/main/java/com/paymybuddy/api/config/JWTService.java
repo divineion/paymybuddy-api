@@ -3,6 +3,7 @@ package com.paymybuddy.api.config;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -28,6 +29,7 @@ public class JWTService {
 				.expiresAt(now.plus(10, ChronoUnit.DAYS))
 				.subject(user.getUsername()) // email
 				.claim("id", user.getId())
+				.claim("authorities", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
 				.build();
 		
 		JwtEncoderParameters parameters = JwtEncoderParameters.from(
