@@ -23,7 +23,7 @@ public class LoginController {
 	
 	// récupérer l'Authentication 
 	// JWTService founit le token
-	@PostMapping("/login_check")
+	@PostMapping("/api/login_check")
 	public String getToken(@RequestBody UserLoginDto loginDto) {
 		//créer un auth token via spring security
 		Authentication authToken = new UsernamePasswordAuthenticationToken(loginDto.username(), loginDto.password());
