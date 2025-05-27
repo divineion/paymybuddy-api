@@ -1,5 +1,9 @@
 package com.paymybuddy.api.config;
 
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,7 +28,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 		User user = repository.findByActiveEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException(ApiMessages.INVALID_CREDENTIALS));
 		// build un UserDetails avec les prop dont j'ai besoin
-		return new CustomUserDetails(user.getId(), user.getActiveEmail(), user.getPassword(), null);
+		List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().getName().name()));
+		
+		return new CustomUserDetails(user.getId(), user.getActiveEmail(), user.getPassword(), authorities);
 	}
-
 }
