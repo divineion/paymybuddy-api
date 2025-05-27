@@ -6,7 +6,6 @@ import java.security.interfaces.RSAPublicKey;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,6 +26,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 @Configuration // indiquera à Spring qu'il y a des beans dans la classe
 @EnableWebSecurity //permet de configurer des éléments de sécurity
@@ -40,11 +41,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))        
         		// méthode  requestMatchers()  pour définir l'association des rôles  USER  (utilisateur) et ADMIN  (administrateur) avec des pages
                 .authorizeHttpRequests(auth -> {
-                	auth.requestMatchers("/login_check").permitAll();
+                	auth.requestMatchers("/api/login_check").permitAll();
+                	auth.requestMatchers("/api/register").permitAll();
+                    auth.requestMatchers("/api/admin/**").hasRole("ADMIN");
                     auth.requestMatchers("/api/**").authenticated();
                 })
                 // activer OAuth2 et le support jwt
-                .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())) 
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))) 
                 .build();
 	}
 	
@@ -79,5 +82,22 @@ public class SecurityConfig {
 	@Bean
 	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
+	}
+	
+	//crée un converter qui permet à Spring Security de lire les rôles (authorities) 
+	//depuis le JWT et de les transformer en authorities utilisables dans le contexte de sécurité
+	@Bean
+	JwtAuthenticationConverter jwtAuthenticationConverter() {
+		// créer un JwtGrantedAuthoritiesConverter pour lire le claim authorities du token
+	    JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+	    grantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
+	    // role préfixés en BDD/dans le token
+	    grantedAuthoritiesConverter.setAuthorityPrefix("");
+
+	    //créer un JwtAuthenticationConverter et injecter le JwtGrantedAuthoritiesConverter
+	    JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+	    converter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+	    // utiliser le converter dans la config
+	    return converter;
 	}
 }

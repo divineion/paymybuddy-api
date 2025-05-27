@@ -13,6 +13,7 @@ import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
+import com.paymybuddy.api.exceptions.RoleNotFoundException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.services.dto.BeneficiaryDto;
@@ -46,7 +47,7 @@ public class UserController {
 	}
 
 	@PostMapping("/api/register")
-	public ResponseEntity<UserDto> register(@RequestBody UserAccountDto accountDto) throws EmailAlreadyExistsException {
+	public ResponseEntity<UserDto> register(@RequestBody UserAccountDto accountDto) throws EmailAlreadyExistsException, RoleNotFoundException  {
 		UserDto newUser = service.registerNewUserAccount(accountDto);
 		return ResponseEntity.ok(newUser);
 	}

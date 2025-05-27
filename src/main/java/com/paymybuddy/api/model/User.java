@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -53,6 +54,10 @@ public class User {
 	@OneToMany(mappedBy="receiver")
 	private List<Transfer> receivedTransfers;
 	
+	@ManyToOne
+	@JoinColumn(name="role", referencedColumnName = "id")
+	private Role role;
+	
 	@ManyToMany
 	@JoinTable(
 			name="user_beneficiary",
@@ -65,16 +70,17 @@ public class User {
 	
 	protected User() {}
 
-	private User(Integer id, String username, String email, BigDecimal balance, String password) {
+	private User(Integer id, String username, String email, BigDecimal balance, String password, Role role) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
 		this.balance = balance;
 		this.password = password;
+		this.role= role;
 	}
 	
-	public static User forInitialData(Integer id, String username, String email, BigDecimal balance, String password) {
-		return new User(id, username, email, balance, password);
+	public static User forInitialData(Integer id, String username, String email, BigDecimal balance, String password, Role role) {
+		return new User(id, username, email, balance, password, role);
 	}
 	
 	/**
@@ -82,7 +88,7 @@ public class User {
 	 * This is intended for internal operations (like balance updates or lookups).
 	 */
 	public static User referenceOnly(int id, String username, String email, BigDecimal balance) {
-		return new User(id, username, email, balance, null);
+		return new User(id, username, email, balance, null, null);
 	}
 	
 	public Integer getId() {
@@ -198,5 +204,13 @@ public class User {
 		} else {
 			this.activeEmail = null;
 		}
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 }

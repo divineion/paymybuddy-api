@@ -13,9 +13,14 @@ Les utilisateurs doivent pouvoir :
 
 Le diagramme EER ci-dessous décrit la structure des tables et les relations entre elles dans la base de données.
 
-![alt text](paymybuddy.png)
+![diagramme EER représentant les tables de la base de données paymybuddy et leurs relations.](paymybuddy.png "Diagramme") 
 
 ### Tables :
+
+- **role** : contient les informations sur les rôles des utilisateurs.    
+*id* : identifiant unique du rôle, auto-incrémenté,
+*name* : nom du rôle (exemple : user, admin). 
+
 - **user** : contient les informations sur les utilisateurs.    
 *id* : identifiant unique de l'utilisateur, auto-incrémenté   
 *username* : nom d'utilisateur,   
@@ -24,7 +29,8 @@ Le diagramme EER ci-dessous décrit la structure des tables et les relations ent
 *balance* : solde du compte en euros (ne peut pas être négatif),   
 *deleted_at* : date de suppression du compte (soft-delete),   
 *active_email* : colonne calculée dynamiquement à partir des champs `email` et `deleted_at` pour contenir l'adresse e-mail d'un utilisateur actif. Si le compte de l'utilisateur a été supprimé, un nouveau compte avec la même adresse e-mail peut être créé.    
-
+*role* : role attribué à l'utilisateur (définit ses permissions). 
+**Le champ `role` référence l'identifiant du rôle dans la table role.** 
 **Le champ `active_email` permet de conserver l'unicité de l'adresse e-mail uniquement parmi les comptes utilisateurs actifs** (non supprimés).   
    
 - **transfer** : enregistre les transferts entre utilisateurs.   
@@ -67,9 +73,6 @@ Générer une clé privée : <code>openssl genrsa -out private_key.pem 2048</cod
 Génerer la clé publique correspondante : <code>openssl rsa -pubout -in private_key.pem -out public_key.pem</code>   
 
 Les deux fichiers doivent être placés dans dans src/main/resources/jwt-keys/.
-
-
-
 
 ### Démarrage de l'application
 

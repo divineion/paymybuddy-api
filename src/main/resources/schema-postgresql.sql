@@ -9,6 +9,18 @@ CREATE SCHEMA IF NOT EXISTS paymybuddy;
 SET search_path TO paymybuddy, public;
 
 -- -----------------------------------------------------
+-- Table paymybuddy.role
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS paymybuddy.role (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    CONSTRAINT name_UNIQUE UNIQUE (name)
+);
+
+
+
+-- -----------------------------------------------------
 -- Table paymybuddy.app_user
 -- -----------------------------------------------------
 
@@ -20,7 +32,9 @@ CREATE TABLE IF NOT EXISTS paymybuddy.app_user (
     password VARCHAR(255) NOT NULL,
     balance DECIMAL(10,2) NOT NULL CHECK (balance >= 0),  -- UNSIGNED
     active_email VARCHAR(100) GENERATED ALWAYS AS (CASE WHEN deleted_at IS NULL THEN email ELSE NULL END) STORED,
-    CONSTRAINT active_email_UNIQUE UNIQUE (active_email) 
+    role INT NOT NULL,
+    CONSTRAINT active_email_UNIQUE UNIQUE (active_email),
+    CONSTRAINT fk_user_role FOREIGN KEY (role) REFERENCES paymybuddy.role (id)
 );
 
 -- -----------------------------------------------------
@@ -53,34 +67,50 @@ CREATE TABLE IF NOT EXISTS paymybuddy.user_beneficiary (
 );
 
 -- -----------------------------------------------------
+-- Data for table paymybuddy.role
+-- -----------------------------------------------------
+INSERT INTO paymybuddy.role (id, name)
+SELECT 1, 'ROLE_USER'
+WHERE NOT EXISTS (
+	SELECT 1 FROM paymybuddy.role WHERE name = 'ROLE_USER'
+);
+
+INSERT INTO paymybuddy.role (id, name)
+SELECT 2, 'ROLE_ADMIN'
+WHERE NOT EXISTS (
+	SELECT 1 FROM paymybuddy.role WHERE name = 'ROLE_ADMIN'
+);
+
+
+-- -----------------------------------------------------
 -- Data for table paymybuddy.app_user
 -- -----------------------------------------------------
-INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Georgia', 'georgia@email.com', NULL::timestamp, '$2a$10$Lc2JhT8glUB8.hfGoRYGVuuDnL7RM8XXSLAQTYlmv5hlNkkE14BQu', 100.00
+INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance, role)
+SELECT 'Georgia', 'georgia@email.com', NULL::timestamp, '$2a$10$Lc2JhT8glUB8.hfGoRYGVuuDnL7RM8XXSLAQTYlmv5hlNkkE14BQu', 100.00, 1
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'georgia@email.com'
 );
 
-INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Tanka', 'tanka@email.com', NULL::timestamp, '$2a$10$tOwIV5x8bXF/Xh5tkHkKmO153X8bSGkibFU21KK6oshF1R9mVS6KO', 100.00
+INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance, role)
+SELECT 'Tanka', 'tanka@email.com', NULL::timestamp, '$2a$10$tOwIV5x8bXF/Xh5tkHkKmO153X8bSGkibFU21KK6oshF1R9mVS6KO', 100.00, 1
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'tanka@email.com'
 ); 
 
-INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Bagheera', 'bagheera@email.com', NULL::timestamp, '$2a$10$1CLQi6XqmrfmafzzfeO/jOhGfnY6F4vIk5lbyQh7aSKN7VS.0mIdi', 100.00
+INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance, role)
+SELECT 'Bagheera', 'bagheera@email.com', NULL::timestamp, '$2a$10$1CLQi6XqmrfmafzzfeO/jOhGfnY6F4vIk5lbyQh7aSKN7VS.0mIdi', 100.00, 1
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'bagheera@email.com' 
 );
 
-INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Mania', 'mania@email.com', NULL::timestamp, '$2a$10$OrZrQGi2o7nb1eRzZfgWFOdm9LksYYirAfjb3Agdf9if30eNWhEom', 100.00
+INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance, role)
+SELECT 'Mania', 'mania@email.com', NULL::timestamp, '$2a$10$OrZrQGi2o7nb1eRzZfgWFOdm9LksYYirAfjb3Agdf9if30eNWhEom', 100.00, 1
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'mania@email.com' 
 );
 
-INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance)
-SELECT 'Jeena', 'jeena@email.com', NULL, '$2a$10$E3MsEXGQJfKhtRwBWCQjoeOHrGXH2AqN15RhOjQu1GirCdMcNRrTG', 100.00
+INSERT INTO paymybuddy.app_user (username, email, deleted_at, password, balance, role)
+SELECT 'Jeena', 'jeena@email.com', NULL, '$2a$10$E3MsEXGQJfKhtRwBWCQjoeOHrGXH2AqN15RhOjQu1GirCdMcNRrTG', 100.00, 1
 WHERE NOT EXISTS (
 	SELECT 1 FROM paymybuddy.app_user WHERE active_email = 'jeena@email.com' 
 );
