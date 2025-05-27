@@ -16,13 +16,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.paymybuddy.api.config.SecurityConfig;
+import com.paymybuddy.api.config.TestSecurityConfig;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.services.dto.TransferPageDto;
 import com.paymybuddy.api.services.dto.UserDto;
 import com.paymybuddy.api.services.user.UserService;
 //https://www.baeldung.com/spring-mockmvc-vs-webmvctest
-@Import(SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
 
@@ -46,7 +46,7 @@ public class UserControllerTest {
 		mockMvc.perform(get("/api/user/{userId}", userId))
 		.andExpectAll(
 			status().isOk(), 
-			jsonPath("$.id", is(1)),
+			jsonPath("$.id", is(userId)),
 			jsonPath("$.username", is("Sylvia")), 
 			jsonPath("$.email", is("sylvia@email.com"))
 		);
