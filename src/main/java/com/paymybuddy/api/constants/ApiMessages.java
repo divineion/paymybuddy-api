@@ -14,4 +14,6 @@ public class ApiMessages {
 	public static final String INSUFFICIENT_AMOUNT = "The transfered amount cannot be less than 1€.";
 
 	public static final String INVALID_CREDENTIALS = "Invalid credentials";
+
+	public static final String ROLE_NOT_FOUND = "Role not found: ";
 }

@@ -78,4 +78,11 @@ public class GlobalControllerExceptionHandler {
 		logger.error(ApiMessages.INVALID_CREDENTIALS);
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
 	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleRoleNotFoundException(RoleNotFoundException e) {
+		ApiError apiError = new ApiError(404, ApiMessages.ROLE_NOT_FOUND);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+	}
 }
