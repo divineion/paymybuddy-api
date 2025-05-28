@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.services.dto.ApiError;
+import com.paymybuddy.api.services.user.UserDeletionNotAllowedException;
+import com.paymybuddy.api.services.user.UserNotSoftDeletedException;
 
 @ControllerAdvice(annotations = RestController.class)
 public class GlobalControllerExceptionHandler {
@@ -84,5 +86,19 @@ public class GlobalControllerExceptionHandler {
 		ApiError apiError = new ApiError(500, ApiMessages.ROLE_NOT_FOUND);
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleUserNotSoftDeletedException(UserNotSoftDeletedException e) {
+		ApiError apiError = new ApiError(400, ApiMessages.USER_NOT_SOFT_DELETED);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleUserDeletionNotAllowedException(UserDeletionNotAllowedException e) {
+		ApiError apiError = new ApiError(400, ApiMessages.USER_DELETION_NOT_ALLOWED);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
 	}
 }
