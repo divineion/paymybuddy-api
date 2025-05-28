@@ -48,7 +48,7 @@ public class GlobalControllerExceptionHandler {
 	public ResponseEntity<ApiError> handleRelationAlreadyExistsException(RelationAlreadyExistsException e) {
 		ApiError apiError = new ApiError(409, e.getMessage());
 		logger.error(e.getMessage());
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
 	}
 	
 	@ExceptionHandler
@@ -81,8 +81,8 @@ public class GlobalControllerExceptionHandler {
 	
 	@ExceptionHandler
 	public ResponseEntity<ApiError> handleRoleNotFoundException(RoleNotFoundException e) {
-		ApiError apiError = new ApiError(404, ApiMessages.ROLE_NOT_FOUND);
+		ApiError apiError = new ApiError(500, ApiMessages.ROLE_NOT_FOUND);
 		logger.error(e.getMessage());
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
 	}
 }
