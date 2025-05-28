@@ -1,4 +1,4 @@
-package com.paymybuddy.api.services.mapper;
+package com.paymybuddy.api.services.transfer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.paymybuddy.api.model.Transfer;
 import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.services.dto.TransferDto;
-import com.paymybuddy.api.services.transfer.TransferMapper;
 
 @ExtendWith(MockitoExtension.class)
 public class TransferMapperTest {
@@ -24,11 +23,9 @@ public class TransferMapperTest {
 		// GIVEN
 		User sender = mock(User.class);
 		when(sender.getId()).thenReturn(1);
-		when(sender.getUsername()).thenReturn("John");
 		
 		User receiver = mock(User.class);
 		when(receiver.getId()).thenReturn(2);
-		when(receiver.getUsername()).thenReturn("Jack");
 		
 		Transfer transfer = mock(Transfer.class);
 		when(transfer.getSender()).thenReturn(sender);
