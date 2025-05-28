@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.services.dto.ApiError;
-import com.paymybuddy.api.services.user.UserDeletionNotAllowedException;
-import com.paymybuddy.api.services.user.UserNotSoftDeletedException;
 
 @ControllerAdvice(annotations = RestController.class)
 public class GlobalControllerExceptionHandler {

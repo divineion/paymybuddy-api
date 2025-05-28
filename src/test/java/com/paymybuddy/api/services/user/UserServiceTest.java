@@ -15,7 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.paymybuddy.api.exceptions.UserDeletionNotAllowedException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
+import com.paymybuddy.api.exceptions.UserNotSoftDeletedException;
 import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.repositories.UserRepository;
 

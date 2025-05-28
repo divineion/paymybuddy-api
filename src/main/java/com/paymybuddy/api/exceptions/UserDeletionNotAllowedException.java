@@ -1,4 +1,4 @@
-package com.paymybuddy.api.services.user;
+package com.paymybuddy.api.exceptions;
 
 public class UserDeletionNotAllowedException extends Exception {
 	/**

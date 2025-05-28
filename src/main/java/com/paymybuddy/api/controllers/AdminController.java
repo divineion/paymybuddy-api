@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.paymybuddy.api.exceptions.UserDeletionNotAllowedException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
-import com.paymybuddy.api.services.user.UserDeletionNotAllowedException;
-import com.paymybuddy.api.services.user.UserNotSoftDeletedException;
+import com.paymybuddy.api.exceptions.UserNotSoftDeletedException;
 import com.paymybuddy.api.services.user.UserService;
 
 @RestController

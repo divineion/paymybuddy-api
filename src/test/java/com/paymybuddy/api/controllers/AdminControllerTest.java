@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.paymybuddy.api.config.TestSecurityConfig;
 import com.paymybuddy.api.constants.ApiMessages;
-import com.paymybuddy.api.services.user.UserNotSoftDeletedException;
+import com.paymybuddy.api.exceptions.UserNotSoftDeletedException;
 import com.paymybuddy.api.services.user.UserService;
 
 @Import(TestSecurityConfig.class)
