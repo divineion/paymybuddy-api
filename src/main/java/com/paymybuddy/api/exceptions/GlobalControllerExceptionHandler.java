@@ -85,4 +85,18 @@ public class GlobalControllerExceptionHandler {
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
 	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleUserNotSoftDeletedException(UserNotSoftDeletedException e) {
+		ApiError apiError = new ApiError(400, ApiMessages.USER_NOT_SOFT_DELETED);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleUserDeletionNotAllowedException(UserDeletionNotAllowedException e) {
+		ApiError apiError = new ApiError(400, ApiMessages.USER_DELETION_NOT_ALLOWED);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
 }
