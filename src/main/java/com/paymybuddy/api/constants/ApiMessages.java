@@ -15,5 +15,5 @@ public class ApiMessages {
 
 	public static final String INVALID_CREDENTIALS = "Invalid credentials";
 
-	public static final String ROLE_NOT_FOUND = "Role not found: ";
+	public static final String ROLE_NOT_FOUND = "Role not found during user initialization: ";
 }

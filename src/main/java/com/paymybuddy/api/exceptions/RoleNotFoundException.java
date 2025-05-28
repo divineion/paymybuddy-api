@@ -1,6 +1,6 @@
 package com.paymybuddy.api.exceptions;
 
-public class RoleNotFoundException extends Exception {
+public class RoleNotFoundException extends RuntimeException {
 	/**
 	 * 
 	 */
