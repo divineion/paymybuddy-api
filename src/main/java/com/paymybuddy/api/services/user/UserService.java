@@ -11,7 +11,6 @@ import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
-import com.paymybuddy.api.exceptions.RoleNotFoundException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.model.User;
@@ -41,7 +40,7 @@ public class UserService {
 	}
 
 	@Transactional(rollbackFor = Exception.class)
-	public UserDto registerNewUserAccount(UserAccountDto accountDto) throws RoleNotFoundException, EmailAlreadyExistsException {
+	public UserDto registerNewUserAccount(UserAccountDto accountDto) throws EmailAlreadyExistsException {
 		if (userRepository.findByActiveEmail(accountDto.email()).isPresent()) {
 			throw new EmailAlreadyExistsException(ApiMessages.EMAIL_ALREADY_EXISTS + accountDto.email());
 		}
