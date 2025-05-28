@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.paymybuddy.api.constants.ApiMessages;
+import com.paymybuddy.api.constants.UserManagementSettings;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
@@ -166,5 +167,33 @@ public class UserService {
 			currentUser.removeBeneficiary(beneficiary);
 			userRepository.save(currentUser);
 		}
+	}
+
+	/**
+	 * Permanently deletes a user by their id.
+	 * <p>
+	 * The user must have been previously soft-deleted (i.e., {@code deletedAt} is not null),
+	 * and the soft-delete date must be older than the minimum required delay defined
+	 * in {@link UserManagementSettings#getMinSoftDeleteDate()}.
+	 * <p>
+	 *
+	 * @param id the ID of the user to be permanently deleted
+	 * @throws UserNotFoundException if no user with the given ID exists
+	 * @throws UserNotSoftDeletedException if the user has not been soft-deleted
+	 * @throws UserDeletionNotAllowedException if the minimum soft-delete delay has not elapsed
+	 */
+	public void deleteUser(int id) throws UserNotFoundException, UserNotSoftDeletedException, UserDeletionNotAllowedException {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
+				
+		if (user.getDeletedAt() == null) {
+			throw new UserNotSoftDeletedException(ApiMessages.USER_NOT_SOFT_DELETED);
+		}
+		
+		if (user.getDeletedAt().isAfter(UserManagementSettings.getMinSoftDeleteDate())) {
+			throw new UserDeletionNotAllowedException(ApiMessages.USER_DELETION_NOT_ALLOWED);
+		}
+		
+		userRepository.deleteById(id);
 	}
 }
