@@ -15,6 +15,7 @@ import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
+import com.paymybuddy.api.exceptions.UserAlreadySoftDeleted;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.services.dto.BeneficiaryDto;
 import com.paymybuddy.api.services.dto.EmailRequestDto;
@@ -58,6 +59,12 @@ public class UserController {
 			UserNotFoundException {
 		BeneficiaryDto user = service.addBeneficiary(id, email);
 		return ResponseEntity.ok(user);
+	}
+	
+	@PutMapping("/api/user/{id}/delete-account")
+	public ResponseEntity<Void> deleteAccount(@PathVariable int id) throws UserNotFoundException, UserAlreadySoftDeleted {
+		service.softDeleteUser(id);
+		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("api/user/{id}/remove-relation/{beneficiaryId}")

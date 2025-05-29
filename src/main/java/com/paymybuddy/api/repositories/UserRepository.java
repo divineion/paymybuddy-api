@@ -1,6 +1,7 @@
 package com.paymybuddy.api.repositories;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,4 +27,8 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	@Modifying
 	@Query("update User u set u.balance = :balance where u.id = :id")
 	void updateBalance(@Param("id") int id, @Param("balance") BigDecimal balance);
+	
+	@Modifying
+	@Query("update User u set u.deletedAt = :date where u.id = :id")
+	void softDeleteUserById(@Param("date") LocalDateTime date, @Param("id") int id);
 }

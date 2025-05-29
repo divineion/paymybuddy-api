@@ -18,4 +18,5 @@ public class ApiMessages {
 	public static final String INVALID_CREDENTIALS = "Invalid credentials";
 
 	public static final String ROLE_NOT_FOUND = "Role not found during user initialization: ";
+	public static final String USER_ALREADY_SOFT_DELETED = "This user has already been soft-deleted.";
 }
