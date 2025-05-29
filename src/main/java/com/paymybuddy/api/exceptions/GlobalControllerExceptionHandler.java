@@ -106,4 +106,11 @@ public class GlobalControllerExceptionHandler {
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
 	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleForbiddenAccessException(ForbiddenAccessException e) {
+		ApiError apiError = new ApiError(403, ApiMessages.FORBIDDEN_ACCESS);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
+	}
 }
