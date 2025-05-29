@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.paymybuddy.api.annotations.AuthenticatedUser;
+import com.paymybuddy.api.annotations.AuthenticatedUserOrAdmin;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
@@ -66,6 +67,7 @@ public class UserController {
 		return ResponseEntity.ok(user);
 	}
 	
+	@AuthenticatedUserOrAdmin
 	@PutMapping("/api/user/{id}/delete-account")
 	public ResponseEntity<Void> deleteAccount(@PathVariable int id) throws UserNotFoundException, UserAlreadySoftDeleted {
 		service.softDeleteUser(id);
