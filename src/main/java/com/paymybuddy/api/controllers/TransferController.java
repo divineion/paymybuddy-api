@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.paymybuddy.api.annotations.AuthenticatedUser;
 import com.paymybuddy.api.exceptions.InsufficientAmountException;
 import com.paymybuddy.api.exceptions.InsufficientBalanceException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
@@ -22,6 +23,7 @@ public class TransferController {
 		this.service = service;
 	}
 
+	@AuthenticatedUser
 	@PostMapping("/api/transfer")
 	public ResponseEntity<TransferDto> createTransfer(@RequestBody TransferRequestDto transferReqDto)
 			throws UserNotFoundException, InsufficientBalanceException, InsufficientAmountException,

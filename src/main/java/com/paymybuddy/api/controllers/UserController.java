@@ -1,5 +1,6 @@
 package com.paymybuddy.api.controllers;
 
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.paymybuddy.api.annotations.AuthenticatedUser;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
@@ -32,6 +34,7 @@ public class UserController {
 		this.service = service;
 	}
 
+	@AuthenticatedUser
 	@GetMapping("/api/user/{id}")
 	public ResponseEntity<UserDto> getUserById(@PathVariable int id) throws UserNotFoundException {
 		UserDto user;
@@ -39,6 +42,7 @@ public class UserController {
 		return ResponseEntity.ok(user);
 	}
 
+	@AuthenticatedUser
 	@GetMapping("/api/user/{id}/transfers")
 	public ResponseEntity<TransferPageDto> getTransferPage(@PathVariable int id) throws UserNotFoundException {
 		TransferPageDto transferPageInfo;
@@ -53,6 +57,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
 	}
 
+	@AuthenticatedUser
 	@PutMapping("/api/user/{id}/add-relation")
 	public ResponseEntity<BeneficiaryDto> createRelation(@PathVariable int id, @RequestBody EmailRequestDto email)
 			throws EmailNotFoundException, SelfRelationException, RelationAlreadyExistsException,
@@ -67,6 +72,7 @@ public class UserController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@AuthenticatedUser
 	@DeleteMapping("api/user/{id}/remove-relation/{beneficiaryId}")
 	public ResponseEntity<Void> deleteRelation(@PathVariable int id, @PathVariable int beneficiaryId)
 			throws RelationNotFoundException, UserNotFoundException {
