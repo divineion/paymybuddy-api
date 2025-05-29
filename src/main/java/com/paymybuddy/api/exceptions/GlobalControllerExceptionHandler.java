@@ -102,7 +102,7 @@ public class GlobalControllerExceptionHandler {
 	
 	@ExceptionHandler
 	public ResponseEntity<ApiError> handleUserAlreadySoftDeleted(UserAlreadySoftDeleted e) {
-		ApiError apiError = new ApiError(409, e.getMessage());
+		ApiError apiError = new ApiError(409, ApiMessages.USER_ALREADY_SOFT_DELETED);
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
 	}
