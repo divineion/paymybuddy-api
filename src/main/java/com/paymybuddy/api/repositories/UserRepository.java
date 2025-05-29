@@ -30,5 +30,5 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	
 	@Modifying
 	@Query("update User u set u.deletedAt = :date where u.id = :id")
-	void softDeleteUser(@Param("date") LocalDateTime date, @Param("id") int id);
+	void softDeleteUserById(@Param("date") LocalDateTime date, @Param("id") int id);
 }

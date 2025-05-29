@@ -214,11 +214,11 @@ public class UserService {
 				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
 		
 		if (user.getDeletedAt() != null) {
-			throw new UserAlreadySoftDeleted(ApiMessages.USER_ALREADY_SOFT_DELETED + id);
+			throw new UserAlreadySoftDeleted(ApiMessages.USER_ALREADY_SOFT_DELETED);
 		}
 		
 		LocalDateTime now = LocalDateTime.now();
 		
-		userRepository.softDeleteUser(now, id);
+		userRepository.softDeleteUserById(now, id);
 	}
 }
