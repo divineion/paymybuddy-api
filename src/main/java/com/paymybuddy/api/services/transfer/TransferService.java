@@ -48,13 +48,13 @@ public class TransferService {
 	@Transactional(rollbackFor = Exception.class)
 	public TransferDto createTransfer(TransferRequestDto transferReqDto) throws UserNotFoundException,
 			InsufficientBalanceException, InsufficientAmountException, RelationNotFoundException {
-		User sender = userRepository.findById(transferReqDto.senderId())
+		User sender = userRepository.findById(transferReqDto.id())
 				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
 		
 		User receiver = userRepository.findById(transferReqDto.receiverId())
 				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
 
-		if (!userRepository.beneficiaryExists(transferReqDto.senderId(), transferReqDto.receiverId())) {
+		if (!userRepository.beneficiaryExists(transferReqDto.id(), transferReqDto.receiverId())) {
 			throw new RelationNotFoundException(ApiMessages.RELATION_NOT_FOUND);
 		}
 
@@ -80,7 +80,7 @@ public class TransferService {
 		userRepository.updateBalance(receiver.getId(), updatedReceiverBalance);
 		repository.save(transfer);
 
-		TransferDto transferDto = mapper.fromTransferToTransferDto(transfer, transferReqDto.senderId());
+		TransferDto transferDto = mapper.fromTransferToTransferDto(transfer, transferReqDto.id());
 
 		return transferDto;
 	}
