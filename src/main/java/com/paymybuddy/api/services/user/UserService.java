@@ -1,5 +1,6 @@
 package com.paymybuddy.api.services.user;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
+import com.paymybuddy.api.exceptions.UserAlreadySoftDeleted;
 import com.paymybuddy.api.exceptions.UserDeletionNotAllowedException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.exceptions.UserNotSoftDeletedException;
@@ -197,5 +199,26 @@ public class UserService {
 		}
 		
 		userRepository.deleteById(id);
+	}
+	
+	/**
+	 * Soft-deletes a user by setting their {@code deletedAt} field to the current date and time.
+	 * 
+	 * @param id the id of the user to soft-delete
+	 * @throws UserNotFoundException if no user with the given ID exists
+	 * @throws UserAlreadySoftDeleted 
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void softDeleteUser(int id) throws UserNotFoundException, UserAlreadySoftDeleted {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
+		
+		if (user.getDeletedAt() != null) {
+			throw new UserAlreadySoftDeleted(ApiMessages.USER_ALREADY_SOFT_DELETED + id);
+		}
+		
+		LocalDateTime now = LocalDateTime.now();
+		
+		userRepository.softDeleteUser(now, id);
 	}
 }
