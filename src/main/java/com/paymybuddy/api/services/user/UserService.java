@@ -245,4 +245,24 @@ public class UserService {
 		
 		userRepository.updatePasswordById(id, encodedNewPassword);	
 	}
+
+	/**
+	 * ADMIN ONLY
+	 * Updates the password of a user by their id.
+	 * This method is intended for administrative purposes only and does not require 
+	 * the old password for verification.
+	 *
+	 * @param id the ID of the user whose password is to be changed
+	 * @param newPassword the new plain text password to set for the user
+	 * @throws UserNotFoundException if no user exists with the provided ID
+	 */
+	@Transactional
+	public void changePasswordAdminOnly(int id, ChangePasswordDto newPasswordDto) throws UserNotFoundException {
+		userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
+		
+		String encodedPassword = passwordEncoder.encode(newPasswordDto.newPassword());
+		
+		userRepository.updatePasswordById(id, encodedPassword);
+	}
 }
