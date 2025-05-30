@@ -113,4 +113,18 @@ public class GlobalControllerExceptionHandler {
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
 	}
+
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handlePasswordMissmatchException(PasswordMissmatchException e) {
+		ApiError apiError = new ApiError(400, ApiMessages.PASSWORD_MISMATCH);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleSamePasswordException(SamePasswordException e) {
+		ApiError apiError = new ApiError(400, ApiMessages.SAME_PASSWORD);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
 }
