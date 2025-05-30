@@ -45,7 +45,7 @@ public class LoginController {
 		//https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseCookie.html
 		ResponseCookie cookie = ResponseCookie.from("JSESSIONID", token)
 				.httpOnly(true)
-				.maxAge(ConfigConstants.DEV_ENV_COOKIE_DURATION)
+				.maxAge(ConfigConstants.DEV_ENV_COOKIE_DURATION_IN_SECONDS)
 				.secure(false)
 				.path("/") // définit les routes sur lesquelles le cookie sera envoyé depuis le front (par défaut le chemin de la requête qui l'a envoyé)
 				.build();
