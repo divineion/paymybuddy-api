@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,8 +12,10 @@ import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.constants.UserManagementSettings;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
+import com.paymybuddy.api.exceptions.PasswordMissmatchException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
+import com.paymybuddy.api.exceptions.SamePasswordException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserAlreadySoftDeleted;
 import com.paymybuddy.api.exceptions.UserDeletionNotAllowedException;
@@ -21,6 +24,7 @@ import com.paymybuddy.api.exceptions.UserNotSoftDeletedException;
 import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.repositories.UserRepository;
 import com.paymybuddy.api.services.dto.BeneficiaryDto;
+import com.paymybuddy.api.services.dto.ChangePasswordDto;
 import com.paymybuddy.api.services.dto.EmailRequestDto;
 import com.paymybuddy.api.services.dto.TransferDto;
 import com.paymybuddy.api.services.dto.TransferPageDto;
@@ -35,13 +39,15 @@ public class UserService {
 	private final UserMapper mapper;
 	private final TransferMapper transferMapper;
 	private final UserValidator validator;
+	private final PasswordEncoder passwordEncoder;
 
 	public UserService(UserRepository userRepository, UserMapper mapper, TransferMapper transferMapper,
-			UserValidator validator) {
+			UserValidator validator, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.mapper = mapper;
 		this.transferMapper = transferMapper;
 		this.validator = validator;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -220,5 +226,23 @@ public class UserService {
 		LocalDateTime now = LocalDateTime.now();
 		
 		userRepository.softDeleteUserById(now, id);
+	}
+
+	@Transactional
+	public void changePassword(int id, ChangePasswordDto changePasswordDto) throws UserNotFoundException, PasswordMissmatchException, SamePasswordException {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
+		
+		if (!passwordEncoder.matches(changePasswordDto.oldPassword(), user.getPassword())) {
+			throw new PasswordMissmatchException(ApiMessages.PASSWORD_MISMATCH);
+		}
+		
+		if (changePasswordDto.oldPassword().equals(changePasswordDto.newPassword())) {
+			throw new SamePasswordException(ApiMessages.SAME_PASSWORD);
+		}
+		
+		String encodedNewPassword = passwordEncoder.encode(changePasswordDto.newPassword());
+		
+		userRepository.updatePasswordById(id, encodedNewPassword);	
 	}
 }
