@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.paymybuddy.api.annotations.AdminOnly;
 import com.paymybuddy.api.exceptions.UserDeletionNotAllowedException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.exceptions.UserNotSoftDeletedException;
@@ -19,6 +20,7 @@ public class AdminController {
 		this.service = service;
 	}
 	
+	@AdminOnly
 	@DeleteMapping("/api/admin/user/{id}")
 	public ResponseEntity<Void> deleteUser(@PathVariable int id) throws UserNotFoundException, UserNotSoftDeletedException, UserDeletionNotAllowedException {
 		service.deleteUser(id);
