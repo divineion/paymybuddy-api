@@ -1,5 +1,9 @@
 package com.paymybuddy.api.controllers;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -7,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.paymybuddy.api.config.ConfigConstants;
 import com.paymybuddy.api.config.CustomUserDetails;
 import com.paymybuddy.api.config.JWTService;
 import com.paymybuddy.api.services.dto.UserLoginDto;
@@ -24,7 +29,7 @@ public class LoginController {
 	// récupérer l'Authentication 
 	// JWTService founit le token
 	@PostMapping("/api/login_check")
-	public String getToken(@RequestBody UserLoginDto loginDto) {
+	public ResponseEntity<String> getToken(@RequestBody UserLoginDto loginDto) {
 		//créer un auth token via spring security
 		Authentication authToken = new UsernamePasswordAuthenticationToken(loginDto.username(), loginDto.password());
 		
@@ -37,7 +42,19 @@ public class LoginController {
 	    //passzr le CustomUserDetails pour l'utiliser dans le JWTService
 		String token = jwtService.generateToken(userDetails);
 		
-		return token;
+		//https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseCookie.html
+		ResponseCookie cookie = ResponseCookie.from("JSESSIONID", token)
+				.httpOnly(true)
+				.maxAge(ConfigConstants.DEV_ENV_COOKIE_DURATION)
+				.secure(false)
+				.path("/") // définit les routes sur lesquelles le cookie sera envoyé depuis le front (par défaut le chemin de la requête qui l'a envoyé)
+				.build();
+		
+		
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.header(HttpHeaders.SET_COOKIE, cookie.toString()) //convertir le cookie en string 
+				// TODO remove token 
+				.body(token); 
 	}
-
 }
