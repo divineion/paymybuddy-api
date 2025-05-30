@@ -177,6 +177,9 @@ public class UserAccessAspect {
 					request.getRequestURI());
 			throw new ForbiddenAccessException("Forbidden.");
 		}
+		
+		logger.info("ADMIN (id: {}) initiated an operation on a user via endpoint: {}", tokenUserId,
+				request.getRequestURI());
 
 		return pjp.proceed();
 	}
