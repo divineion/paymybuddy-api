@@ -13,14 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.paymybuddy.api.annotations.AuthenticatedUser;
 import com.paymybuddy.api.annotations.AuthenticatedUserOrAdmin;
+import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
+import com.paymybuddy.api.exceptions.PasswordMissmatchException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
+import com.paymybuddy.api.exceptions.SamePasswordException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserAlreadySoftDeleted;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
+import com.paymybuddy.api.services.dto.ApiResponse;
 import com.paymybuddy.api.services.dto.BeneficiaryDto;
+import com.paymybuddy.api.services.dto.ChangePasswordDto;
 import com.paymybuddy.api.services.dto.EmailRequestDto;
 import com.paymybuddy.api.services.dto.TransferPageDto;
 import com.paymybuddy.api.services.dto.UserAccountDto;
@@ -80,5 +85,12 @@ public class UserController {
 			throws RelationNotFoundException, UserNotFoundException {
 			service.removeBeneficiary(id, beneficiaryId);
 			return ResponseEntity.noContent().build();
+	}
+	
+	@AuthenticatedUser
+	@PutMapping("/api/user/{id}/change-password")
+	public ResponseEntity<ApiResponse> updatePassword(@PathVariable int id, @RequestBody ChangePasswordDto changePasswordDto) throws UserNotFoundException, PasswordMissmatchException, SamePasswordException {
+		service.changePassword(id, changePasswordDto);
+		return ResponseEntity.ok(new ApiResponse(ApiMessages.PASSWORD_SUCCESSFULLY_UPDATED));
 	}
 }
