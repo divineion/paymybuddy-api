@@ -31,4 +31,8 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 	@Modifying
 	@Query("update User u set u.deletedAt = :date where u.id = :id")
 	void softDeleteUserById(@Param("date") LocalDateTime date, @Param("id") int id);
+
+	@Modifying
+	@Query("update User u set u.password = :password where u.id = :id")
+	void updatePasswordById(int id, String password);
 }
