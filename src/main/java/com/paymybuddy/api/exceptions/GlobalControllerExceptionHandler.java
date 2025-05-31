@@ -110,7 +110,7 @@ public class GlobalControllerExceptionHandler {
 	@ExceptionHandler
 	public ResponseEntity<ApiError> handleForbiddenAccessException(ForbiddenAccessException e) {
 		ApiError apiError = new ApiError(403, ApiMessages.FORBIDDEN_ACCESS);
-		logger.error(e.getMessage());
+		logger.warn(e.getMessage());
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
 	}
 
@@ -124,6 +124,13 @@ public class GlobalControllerExceptionHandler {
 	@ExceptionHandler
 	public ResponseEntity<ApiError> handleSamePasswordException(SamePasswordException e) {
 		ApiError apiError = new ApiError(400, ApiMessages.SAME_PASSWORD);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleSameEmailException(SameEmailException e) {
+		ApiError apiError = new ApiError(400, ApiMessages.SAME_EMAIL);
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
 	}
