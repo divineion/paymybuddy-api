@@ -12,6 +12,7 @@ import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.constants.UserManagementSettings;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
+import com.paymybuddy.api.exceptions.ForbiddenAccessException;
 import com.paymybuddy.api.exceptions.PasswordMissmatchException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
@@ -259,7 +260,7 @@ public class UserService {
 	 * @param newPassword the new plain text password to set for the user
 	 * @throws UserNotFoundException if no user exists with the provided ID
 	 */
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void changePasswordAdminOnly(int id, ChangePasswordDto newPasswordDto) throws UserNotFoundException {
 		userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
 
@@ -268,13 +269,15 @@ public class UserService {
 		userRepository.updatePasswordById(id, encodedPassword);
 	}
 
-	@Transactional
-	public void changeEmail(int id, ChangeEmailDto changeEmailDto) throws UserNotFoundException, EmailNotFoundException, SameEmailException {
+	@Transactional(rollbackFor = Exception.class)
+	public void changeEmail(int id, ChangeEmailDto changeEmailDto) throws UserNotFoundException, EmailNotFoundException, SameEmailException, ForbiddenAccessException {
 		userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
 		String currentEmail = changeEmailDto.oldEmail();
 		
-		if (userRepository.findByActiveEmail(currentEmail).isEmpty()) {
-			throw new EmailNotFoundException(ApiMessages.EMAIL_NOT_FOUND);
+		User userByActiveEmail = userRepository.findByActiveEmail(currentEmail).orElseThrow(() -> new EmailNotFoundException(ApiMessages.EMAIL_NOT_FOUND));
+		
+		if (userByActiveEmail.getId() != id) {
+			throw new ForbiddenAccessException(currentEmail);
 		}
 		
 		if (changeEmailDto.newEmail().equals(currentEmail)) {
@@ -282,6 +285,5 @@ public class UserService {
 		}
 		
 		userRepository.updateEmail(id, changeEmailDto.newEmail());
-
 	}
 }

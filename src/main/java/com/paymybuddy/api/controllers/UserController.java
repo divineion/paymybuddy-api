@@ -16,6 +16,7 @@ import com.paymybuddy.api.annotations.AuthenticatedUserOrAdmin;
 import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
+import com.paymybuddy.api.exceptions.ForbiddenAccessException;
 import com.paymybuddy.api.exceptions.PasswordMissmatchException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
@@ -99,7 +100,7 @@ public class UserController {
 	
 	@AuthenticatedUser
 	@PutMapping("/api/user/{id}/change-email")
-	public ResponseEntity<ApiResponse> updateEmail(@PathVariable int id, @RequestBody ChangeEmailDto changeEmailDto) throws UserNotFoundException, EmailNotFoundException, SameEmailException {
+	public ResponseEntity<ApiResponse> updateEmail(@PathVariable int id, @RequestBody ChangeEmailDto changeEmailDto) throws UserNotFoundException, EmailNotFoundException, SameEmailException, ForbiddenAccessException {
 		service.changeEmail(id, changeEmailDto);
 		return ResponseEntity.ok(new ApiResponse(ApiMessages.EMAIL_SUCCESSFULLY_UPDATED));
 	}
