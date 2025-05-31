@@ -127,4 +127,11 @@ public class GlobalControllerExceptionHandler {
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
 	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleSameEmailException(SameEmailException e) {
+		ApiError apiError = new ApiError(400, ApiMessages.SAME_EMAIL);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
 }
