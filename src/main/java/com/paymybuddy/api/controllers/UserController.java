@@ -19,12 +19,14 @@ import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.PasswordMissmatchException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
+import com.paymybuddy.api.exceptions.SameEmailException;
 import com.paymybuddy.api.exceptions.SamePasswordException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserAlreadySoftDeleted;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.services.dto.ApiResponse;
 import com.paymybuddy.api.services.dto.BeneficiaryDto;
+import com.paymybuddy.api.services.dto.ChangeEmailDto;
 import com.paymybuddy.api.services.dto.ChangePasswordDto;
 import com.paymybuddy.api.services.dto.EmailRequestDto;
 import com.paymybuddy.api.services.dto.TransferPageDto;
@@ -63,6 +65,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
 	}
 
+	// TODO POST request pour correspondre au fonctionnel plutôt qu'au technique
 	@AuthenticatedUser
 	@PutMapping("/api/user/{id}/add-relation")
 	public ResponseEntity<BeneficiaryDto> createRelation(@PathVariable int id, @RequestBody EmailRequestDto email)
@@ -92,5 +95,12 @@ public class UserController {
 	public ResponseEntity<ApiResponse> updatePassword(@PathVariable int id, @RequestBody ChangePasswordDto changePasswordDto) throws UserNotFoundException, PasswordMissmatchException, SamePasswordException {
 		service.changePassword(id, changePasswordDto);
 		return ResponseEntity.ok(new ApiResponse(ApiMessages.PASSWORD_SUCCESSFULLY_UPDATED));
+	}
+	
+	@AuthenticatedUser
+	@PutMapping("/api/user/{id}/change-email")
+	public ResponseEntity<ApiResponse> updateEmail(@PathVariable int id, @RequestBody ChangeEmailDto changeEmailDto) throws UserNotFoundException, EmailNotFoundException, SameEmailException {
+		service.changeEmail(id, changeEmailDto);
+		return ResponseEntity.ok(new ApiResponse(ApiMessages.EMAIL_SUCCESSFULLY_UPDATED));
 	}
 }
