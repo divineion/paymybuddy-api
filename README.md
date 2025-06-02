@@ -54,7 +54,7 @@ La table `user_beneficiary` contient ainsi uniquement des associations entre ide
 
 ### Initialisation du schéma de la base de données et données initiales
 
-#### Avec script SQL
+Le mot de passe administrateur doit être défini via la propriété `admin.default.password`.
 
 La configuration courante du projet dans [application.properties](src/main/resources/application.properties) est définie sur `mysql`.   
 [Le schéma](src/main/resources/schema-mysql.sql), conçu pour être utilisé avec MySQL, contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), et un **jeu de données initial**.
