@@ -277,7 +277,7 @@ public class UserService {
 		User userByActiveEmail = userRepository.findByActiveEmail(currentEmail).orElseThrow(() -> new EmailNotFoundException(ApiMessages.EMAIL_NOT_FOUND));
 		
 		if (userByActiveEmail.getId() != id) {
-			throw new ForbiddenAccessException(currentEmail);
+			throw new ForbiddenAccessException(ApiMessages.FORBIDDEN_ACCESS);
 		}
 		
 		if (changeEmailDto.newEmail().equals(currentEmail)) {
