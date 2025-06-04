@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
@@ -18,7 +19,6 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jose.jwk.RSAKey;
-
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,25 +30,29 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 @Configuration // indiquera à Spring qu'il y a des beans dans la classe
-@EnableWebSecurity //permet de configurer des éléments de sécurity
+@EnableWebSecurity // permet de configurer des éléments de sécurity
 public class SecurityConfig {
 	// permettre de modéliser une chaîne de filtres de sécurité
-	@Bean // enregistre la valeur de retour en tant que Bean 
-	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		return http
-                .csrf(csrf -> csrf.disable())
-                // STATELESS pour ne pas créer de session
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))        
-        		// méthode  requestMatchers()  pour définir l'association des rôles  USER  (utilisateur) et ADMIN  (administrateur) avec des pages
-                .authorizeHttpRequests(auth -> {
-                	auth.requestMatchers("/api/login_check").permitAll();
-                	auth.requestMatchers("/api/register").permitAll();
-                    auth.requestMatchers("/api/admin/**").hasRole("ADMIN");
-                    auth.requestMatchers("/api/**").authenticated();
-                })
-                // activer OAuth2 et le support jwt
-                .oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))) 
-                .build();
+	@Bean // enregistre la valeur de retour en tant que Bean
+	SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
+		return http.cors(cors -> cors.configure(http))
+				.csrf(csrf -> csrf.disable())
+				// STATELESS pour ne pas créer de session
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				// méthode  requestMatchers()  pour définir l'association des rôles USER (utilisateur) et ADMIN (administrateur) avec des pages
+				.authorizeHttpRequests(auth -> {
+					auth.requestMatchers("/api/login_check").permitAll();
+					auth.requestMatchers("/api/logout").permitAll();
+					auth.requestMatchers("/api/register").permitAll();
+					auth.requestMatchers("/api/auth_check").authenticated();
+					auth.requestMatchers("/api/admin/**").hasRole("ADMIN");
+					auth.requestMatchers("/api/**").authenticated();
+				})
+				// activer OAuth2 et le support jwt
+				.oauth2ResourceServer(
+						(oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+				.build();
 	}
 	
 	@Bean
@@ -61,7 +65,7 @@ public class SecurityConfig {
 	// injecter la clé publique retournée par la méthode bean déclarée dans RsaKeyConfig
 	@Bean
 	JwtDecoder jwtDecoder(RSAPublicKey publicKey) {
-		//Use the given public key to validate JWTs
+		// Use the given public key to validate JWTs
 		return NimbusJwtDecoder.withPublicKey(publicKey).build();
 	}
 	
@@ -75,10 +79,10 @@ public class SecurityConfig {
 				.keyID(ConfigConstants.RSA_KEY_ID)
 				.build();
 		JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-		
+
 		return new NimbusJwtEncoder(jwks);
 	}
-	
+
 	@Bean
 	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();

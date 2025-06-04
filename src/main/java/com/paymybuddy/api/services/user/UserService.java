@@ -79,6 +79,20 @@ public class UserService {
 
 		return user;
 	}
+	
+	/**
+	 * Retrieves a user by email and returns it as a UserDto.
+	 *
+	 * @param email the user's email
+	 * @return the user as a UserDto
+	 * @throws EmailNotFoundException if the email is not found
+	 */
+	public UserDto findUserDtoByEmail(String email) throws EmailNotFoundException {
+		User user = userRepository.findByActiveEmail(email)
+				.orElseThrow(() -> new EmailNotFoundException(email));
+		
+		return mapper.fromUserToUserDto(user);
+	}
 
 	public TransferPageDto findUserTransferPageInfo(int id) throws UserNotFoundException {
 		User user = userRepository.findById(id)
@@ -277,7 +291,7 @@ public class UserService {
 		User userByActiveEmail = userRepository.findByActiveEmail(currentEmail).orElseThrow(() -> new EmailNotFoundException(ApiMessages.EMAIL_NOT_FOUND));
 		
 		if (userByActiveEmail.getId() != id) {
-			throw new ForbiddenAccessException(currentEmail);
+			throw new ForbiddenAccessException(ApiMessages.FORBIDDEN_ACCESS);
 		}
 		
 		if (changeEmailDto.newEmail().equals(currentEmail)) {

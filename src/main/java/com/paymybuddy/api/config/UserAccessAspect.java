@@ -30,15 +30,51 @@ public class UserAccessAspect {
 		this.jwtDecoder = jwtDecoder;
 	}
 
-	private String validateAndFormatToken(String token) {
-		if (token != null && token.startsWith("Bearer ")) {
-			return token.substring(7);
-		} else {
-			throw new RuntimeException("Authorization header missing or malformed");
-		}
+	
+	/**
+	 * Extracts the JWT token from the incoming HTTP request.
+	 * <p>
+	 * First, the method checks the "Authorization" header. If it contains a Bearer token,
+	 * the token is extracted and returned. If not found, it attempts to retrieve the token
+	 * from the "JWT" cookie.
+	 * </p>
+	 * <p>
+	 * If no token is found in either the header or the cookies, a {@link RuntimeException} is thrown.
+	 * </p>
+	 *
+	 * @param request the HTTP request from which the token is to be extracted
+	 * @return the JWT token as a {@link String}
+	 * @throws RuntimeException if no token is present in the request
+	 */
+	private String resolveToken(HttpServletRequest request) {
+	    String authHeader = request.getHeader("Authorization");
+	    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+	        return authHeader.substring(7);
+	    }
+
+	    if (request.getCookies() != null) {
+	        for (var cookie : request.getCookies()) {
+	            if ("JWT".equals(cookie.getName())) {
+	                return cookie.getValue();
+	            }
+	        }
+	    }
+
+	    throw new RuntimeException("JWT token not found in Authorization header or cookies");
 	}
 
 	// TODO clean code
+	/**
+	 * Intercepts methods annotated with {@code @AuthenticatedUser} to enforce user access control.
+	 * <p>
+	 * Ensures that the id in the request matches the id encoded in the JWT token.
+	 * If not, a {@link ForbiddenAccessException} is thrown.
+	 * </p>
+	 *
+	 * @param pjp the join point representing the intercepted method
+	 * @return the result of the original method execution if access is allowed
+	 * @throws Throwable if access is denied or if an error occurs during method execution
+	 */
 	@Around(value = "@annotation(com.paymybuddy.api.annotations.AuthenticatedUser)")
 	public Object doUserAccessCheck(ProceedingJoinPoint pjp) throws Throwable {
 
@@ -47,9 +83,8 @@ public class UserAccessAspect {
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
 				.getRequest();
 
-		String token = request.getHeader("Authorization");
 
-		token = validateAndFormatToken(token);
+		String token = resolveToken(request);
 
 		Jwt decodedToken = jwtDecoder.decode(token);
 		long tokenUserId = decodedToken.getClaim("id");
@@ -97,14 +132,24 @@ public class UserAccessAspect {
 	}
 
 	// TODO refactor
+	/**
+	 * Intercepts methods annotated with {@code @AuthenticatedUserOrAdmin} to enforce access control.
+	 * <p>
+	 * Allows access if the user is either the resource owner (based on ID comparison)
+	 * or has the admin role. Otherwise, a {@link ForbiddenAccessException} is thrown.
+	 * </p>
+	 *
+	 * @param pjp the join point representing the intercepted method
+	 * @return the result of the original method execution if access is allowed
+	 * @throws Throwable if access is denied or if an error occurs during method execution
+	 */
 	@Around(value = "@annotation(com.paymybuddy.api.annotations.AuthenticatedUserOrAdmin)")
 	public Object doUserOrAdminAccessCheck(ProceedingJoinPoint pjp) throws Throwable {
 		// retrieve users role
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
 				.getRequest();
 
-		String token = request.getHeader("Authorization");
-		token = validateAndFormatToken(token);
+		String token = resolveToken(request);
 
 		Jwt decodedToken = jwtDecoder.decode(token);
 		// suppressio des caractères autour du rôle
@@ -157,6 +202,16 @@ public class UserAccessAspect {
 		return pjp.proceed();
 	}
 
+	/**
+	 * Intercepts methods annotated with {@code @AdminOnly} to enforce admin-only access.
+	 * <p>
+	 * If the user does not have the admin role, access is denied and a {@link ForbiddenAccessException} is thrown.
+	 * </p>
+	 *
+	 * @param pjp the join point representing the intercepted method
+	 * @return the result of the original method execution if access is allowed
+	 * @throws ForbiddenAccessException if access is denied
+	 */
 	@Around(value = "@annotation(com.paymybuddy.api.annotations.AdminOnly)")
 	public Object doAdminAccessCheck(ProceedingJoinPoint pjp) throws Throwable {
 
@@ -164,8 +219,7 @@ public class UserAccessAspect {
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
 				.getRequest();
 
-		String token = request.getHeader("Authorization");
-		token = validateAndFormatToken(token);
+		String token = resolveToken(request);
 
 		Jwt decodedToken = jwtDecoder.decode(token);
 
