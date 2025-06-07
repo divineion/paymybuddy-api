@@ -3,7 +3,7 @@ package com.paymybuddy.api.services.dto;
 import java.math.BigDecimal;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -15,17 +15,17 @@ import jakarta.validation.constraints.Size;
  * @param amount the amount sent to the receiver (excluding any fees)
  */
 public record TransferRequestDto(
-		@NotNull(message = "sender id is required") 
+		@NotBlank(message = "sender id is required") 
 		int id,
 
-		@NotNull(message = "receiver id is required") 
+		@NotBlank(message = "receiver id is required") 
 		int receiverId,
 
 		@Size(min = 10, max = 255, message = "description size must be between 10 and 255 characters ") 
-		@NotNull(message = "description is required") 
+		@NotBlank(message = "description is required") 
 		String description,
 
-		@NotNull(message = "amount is required") 
+		@NotBlank(message = "amount is required") 
 		@Min(value = 1, message = "Amount must be greater than or equal to 1.") 
 		BigDecimal amount
 	){}
