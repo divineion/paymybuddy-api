@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.paymybuddy.api.annotations.AdminOnly;
 import com.paymybuddy.api.constants.ApiMessages;
-import com.paymybuddy.api.exceptions.PasswordMissmatchException;
+import com.paymybuddy.api.exceptions.PasswordMismatchException;
 import com.paymybuddy.api.exceptions.SamePasswordException;
 import com.paymybuddy.api.exceptions.UserDeletionNotAllowedException;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
@@ -36,7 +36,7 @@ public class AdminController {
 	
 	@AdminOnly
 	@PutMapping("/api/admin/user/{id}/change-password")
-	public ResponseEntity<ApiResponse> updatePassword(@PathVariable int id, @RequestBody ChangePasswordDto newPasswordDto) throws UserNotFoundException, PasswordMissmatchException, SamePasswordException {
+	public ResponseEntity<ApiResponse> updatePassword(@PathVariable int id, @RequestBody ChangePasswordDto newPasswordDto) throws UserNotFoundException, PasswordMismatchException, SamePasswordException {
 		service.changePasswordAdminOnly(id, newPasswordDto);
 		return ResponseEntity.ok(new ApiResponse(ApiMessages.PASSWORD_SUCCESSFULLY_UPDATED));
 	}

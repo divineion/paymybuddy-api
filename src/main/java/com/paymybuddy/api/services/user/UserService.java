@@ -13,7 +13,7 @@ import com.paymybuddy.api.constants.UserManagementSettings;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.ForbiddenAccessException;
-import com.paymybuddy.api.exceptions.PasswordMissmatchException;
+import com.paymybuddy.api.exceptions.PasswordMismatchException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
 import com.paymybuddy.api.exceptions.SameEmailException;
@@ -117,11 +117,6 @@ public class UserService {
 
 	// POST REQUESTS
 
-	// add a relation
-	// first of all verify the provided email address exists - calls repo
-	// busines validation (no duplicates, no self relation
-	// add the target user as beneficiary
-
 	/**
 	 * Adds a beneficiary to the current user's list.
 	 * 
@@ -169,7 +164,7 @@ public class UserService {
 	 * exists. 3. Verify that the beneficiary is actually in the current user's
 	 * list. 4. Remove the beneficiary from the user's beneficiaries.
 	 * 
-	 * @param id            the ID of the current user
+	 * @param id the ID of the current user
 	 * @param beneficiaryId the ID of the beneficiary to remove
 	 * @throws RelationNotFoundException if the beneficiary is not in the user's
 	 *                                   list
@@ -248,12 +243,12 @@ public class UserService {
 
 	@Transactional
 	public void changePassword(int id, ChangePasswordDto changePasswordDto)
-			throws UserNotFoundException, PasswordMissmatchException, SamePasswordException {
+			throws UserNotFoundException, PasswordMismatchException, SamePasswordException {
 		User user = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
 
 		if (!passwordEncoder.matches(changePasswordDto.oldPassword(), user.getPassword())) {
-			throw new PasswordMissmatchException(ApiMessages.PASSWORD_MISMATCH);
+			throw new PasswordMismatchException(ApiMessages.PASSWORD_MISMATCH);
 		}
 
 		if (changePasswordDto.oldPassword().equals(changePasswordDto.newPassword())) {

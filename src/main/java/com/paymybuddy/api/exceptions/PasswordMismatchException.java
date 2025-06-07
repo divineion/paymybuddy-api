@@ -1,12 +1,12 @@
 package com.paymybuddy.api.exceptions;
 
-public class PasswordMissmatchException extends Exception {
+public class PasswordMismatchException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public PasswordMissmatchException(String message) {
+	public PasswordMismatchException(String message) {
 		super(message);
 	}
 

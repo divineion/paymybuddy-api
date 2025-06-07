@@ -17,7 +17,7 @@ import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
 import com.paymybuddy.api.exceptions.ForbiddenAccessException;
-import com.paymybuddy.api.exceptions.PasswordMissmatchException;
+import com.paymybuddy.api.exceptions.PasswordMismatchException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
 import com.paymybuddy.api.exceptions.SameEmailException;
@@ -94,7 +94,7 @@ public class UserController {
 	
 	@AuthenticatedUser
 	@PutMapping("/api/user/{id}/change-password")
-	public ResponseEntity<ApiResponse> updatePassword(@PathVariable int id, @Valid @RequestBody ChangePasswordDto changePasswordDto) throws UserNotFoundException, PasswordMissmatchException, SamePasswordException {
+	public ResponseEntity<ApiResponse> updatePassword(@PathVariable int id, @Valid @RequestBody ChangePasswordDto changePasswordDto) throws UserNotFoundException, PasswordMismatchException, SamePasswordException {
 		service.changePassword(id, changePasswordDto);
 		return ResponseEntity.ok(new ApiResponse(ApiMessages.PASSWORD_SUCCESSFULLY_UPDATED));
 	}
