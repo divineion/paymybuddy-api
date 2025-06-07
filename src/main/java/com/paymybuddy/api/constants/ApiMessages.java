@@ -4,6 +4,7 @@ public class ApiMessages {
 	public static final String INVALID_CREDENTIALS = "Invalid credentials";
 	public static final String ROLE_NOT_FOUND = "Role not found during user initialization: ";
 	public static final String FORBIDDEN_ACCESS = "Forbidden access";
+	public static final String INVALID_REQUEST_FORMAT = "Invalid request format";
 	
 	public static final String USER_NOT_FOUND = "No user found  with id: ";
 	public static final String USER_NOT_SOFT_DELETED = "User must be soft-deleted first";

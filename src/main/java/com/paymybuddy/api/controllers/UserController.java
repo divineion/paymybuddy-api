@@ -35,6 +35,8 @@ import com.paymybuddy.api.services.dto.UserAccountDto;
 import com.paymybuddy.api.services.dto.UserDto;
 import com.paymybuddy.api.services.user.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class UserController {
 	private final UserService service;
@@ -61,15 +63,14 @@ public class UserController {
 	}
 
 	@PostMapping("/api/register")
-	public ResponseEntity<UserDto> register(@RequestBody UserAccountDto accountDto) throws EmailAlreadyExistsException  {
+	public ResponseEntity<UserDto> register(@Valid @RequestBody UserAccountDto accountDto) throws EmailAlreadyExistsException  {
 		UserDto newUser = service.registerNewUserAccount(accountDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
 	}
 
-	// TODO POST request pour correspondre au fonctionnel plutôt qu'au technique
 	@AuthenticatedUser
-	@PutMapping("/api/user/{id}/add-relation")
-	public ResponseEntity<BeneficiaryDto> createRelation(@PathVariable int id, @RequestBody EmailRequestDto email)
+	@PostMapping("/api/user/{id}/add-relation")
+	public ResponseEntity<BeneficiaryDto> createRelation(@PathVariable int id, @Valid @RequestBody EmailRequestDto email)
 			throws EmailNotFoundException, SelfRelationException, RelationAlreadyExistsException,
 			UserNotFoundException {
 		BeneficiaryDto user = service.addBeneficiary(id, email);
@@ -93,14 +94,14 @@ public class UserController {
 	
 	@AuthenticatedUser
 	@PutMapping("/api/user/{id}/change-password")
-	public ResponseEntity<ApiResponse> updatePassword(@PathVariable int id, @RequestBody ChangePasswordDto changePasswordDto) throws UserNotFoundException, PasswordMissmatchException, SamePasswordException {
+	public ResponseEntity<ApiResponse> updatePassword(@PathVariable int id, @Valid @RequestBody ChangePasswordDto changePasswordDto) throws UserNotFoundException, PasswordMissmatchException, SamePasswordException {
 		service.changePassword(id, changePasswordDto);
 		return ResponseEntity.ok(new ApiResponse(ApiMessages.PASSWORD_SUCCESSFULLY_UPDATED));
 	}
 	
 	@AuthenticatedUser
 	@PutMapping("/api/user/{id}/change-email")
-	public ResponseEntity<ApiResponse> updateEmail(@PathVariable int id, @RequestBody ChangeEmailDto changeEmailDto) throws UserNotFoundException, EmailNotFoundException, SameEmailException, ForbiddenAccessException {
+	public ResponseEntity<ApiResponse> updateEmail(@PathVariable int id, @Valid @RequestBody ChangeEmailDto changeEmailDto) throws UserNotFoundException, EmailNotFoundException, SameEmailException, ForbiddenAccessException {
 		service.changeEmail(id, changeEmailDto);
 		return ResponseEntity.ok(new ApiResponse(ApiMessages.EMAIL_SUCCESSFULLY_UPDATED));
 	}

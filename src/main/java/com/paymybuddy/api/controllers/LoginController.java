@@ -21,6 +21,8 @@ import com.paymybuddy.api.services.dto.UserDto;
 import com.paymybuddy.api.services.dto.UserLoginDto;
 import com.paymybuddy.api.services.user.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class LoginController {
 	private final JWTService jwtService;
@@ -36,8 +38,7 @@ public class LoginController {
 	// récupérer l'Authentication 
 	// JWTService founit le token
 	@PostMapping("/api/login_check")
-	public ResponseEntity<String> getToken(@RequestBody UserLoginDto loginDto) {
-		//créer un auth token via spring security
+	public ResponseEntity<String> getToken(@Valid @RequestBody UserLoginDto loginDto) {
 		Authentication authToken = new UsernamePasswordAuthenticationToken(loginDto.username(), loginDto.password());
 		
 		// d'aborsd authentifier le user - retourne 401 Unauthorized si erreur d'authentification

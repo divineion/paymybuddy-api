@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -79,6 +80,7 @@ public class GlobalControllerExceptionHandler {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
 	}
 	
+	// TODO refactor
 	@ExceptionHandler
 	public ResponseEntity<ApiError> handleRoleNotFoundException(RoleNotFoundException e) {
 		ApiError apiError = new ApiError(500, ApiMessages.ROLE_NOT_FOUND);
@@ -131,6 +133,13 @@ public class GlobalControllerExceptionHandler {
 	@ExceptionHandler
 	public ResponseEntity<ApiError> handleSameEmailException(SameEmailException e) {
 		ApiError apiError = new ApiError(400, ApiMessages.SAME_EMAIL);
+		logger.error(e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApiError> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+		ApiError apiError = new ApiError(400, (ApiMessages.INVALID_REQUEST_FORMAT));
 		logger.error(e.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
 	}

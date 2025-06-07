@@ -15,6 +15,8 @@ import com.paymybuddy.api.services.dto.TransferDto;
 import com.paymybuddy.api.services.dto.TransferRequestDto;
 import com.paymybuddy.api.services.transfer.TransferService;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class TransferController {
 	private final TransferService service;
@@ -25,7 +27,7 @@ public class TransferController {
 
 	@AuthenticatedUser
 	@PostMapping("/api/transfer")
-	public ResponseEntity<TransferDto> createTransfer(@RequestBody TransferRequestDto transferReqDto)
+	public ResponseEntity<TransferDto> createTransfer(@Valid @RequestBody TransferRequestDto transferReqDto)
 			throws UserNotFoundException, InsufficientBalanceException, InsufficientAmountException,
 			RelationNotFoundException {
 		TransferDto transferDto = service.createTransfer(transferReqDto);
