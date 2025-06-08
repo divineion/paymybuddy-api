@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.paymybuddy.api.model.Role;
@@ -14,6 +15,7 @@ import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.repositories.RoleRepository;
 import com.paymybuddy.api.repositories.UserRepository;
 
+@Profile(value = { "mysql", "postgresql" })
 @Configuration
 public class DataInitializer {
 	@Value("${admin.default.password}")
@@ -22,7 +24,6 @@ public class DataInitializer {
 	@Bean
 	CommandLineRunner createAdmin(UserRepository repository, RoleRepository roleRepository,
 			PasswordEncoder passwordEncoder) {
-		System.out.println("adminPassword : " + adminPassword);
 
 		return args -> {
 			if (repository.findByActiveEmail("admin@email.com").isEmpty()) {
@@ -30,9 +31,6 @@ public class DataInitializer {
 				User admin = User.forInitialData(null, "Admin", "admin@email.com", new BigDecimal("0"),
 						passwordEncoder.encode(adminPassword), adminRole);
 				
-				System.out.println("adminPassword : "+adminPassword);
-				System.out.println("type de  : "+adminPassword.getClass());
-
 				repository.save(admin);
 
 			}
