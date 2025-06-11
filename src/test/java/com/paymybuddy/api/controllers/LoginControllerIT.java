@@ -23,8 +23,8 @@ import com.paymybuddy.api.config.JwtTestUtil;
 import jakarta.servlet.http.Cookie;
 
 @Import(JwtTestUtil.class)
-@SpringBootTest // charger le contexte complet
-@AutoConfigureMockMvc // créer le bean injectable mockMvc
+@SpringBootTest
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class LoginControllerIT {
 	
@@ -80,12 +80,21 @@ public class LoginControllerIT {
 				
 		String jwt = jwtTestUtil.generateToken(email);
 		Cookie cookie = new Cookie("JWT", jwt);
-				
-		// vérif l'authentification
-		//https://docs.spring.io/spring-restdocs/docs/current/reference/htmlsingle/#documenting-your-api-http-cookies		
+						
 		mockMvc.perform(get("/api/auth_check")
 				.cookie(cookie))
 				.andExpect(status().isOk());
 	}
 	
+	@Test
+	public void testLogout_ShouldClearJwtCookie() throws Exception {
+	    MvcResult result = mockMvc.perform(post("/api/logout"))
+	        .andExpect(status().isOk())
+	        .andReturn();
+
+	    String setCookie = result.getResponse().getHeader(HttpHeaders.SET_COOKIE);
+	    Assertions.assertNotNull(setCookie, "Le header Set-Cookie est absent");
+	    Assertions.assertTrue(setCookie.contains("JWT="), "Le cookie JWT est absent dans le header");
+	    Assertions.assertTrue(setCookie.contains("Max-Age=0"), "Le cookie JWT n'est pas supprimé (Max-Age=0 attendu)");
+	}
 }
