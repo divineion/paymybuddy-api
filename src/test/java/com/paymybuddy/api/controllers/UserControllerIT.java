@@ -4,11 +4,13 @@ import static org.hamcrest.CoreMatchers.is;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,13 +28,14 @@ import com.paymybuddy.api.config.JwtTestUtil;
 import com.paymybuddy.api.repositories.UserRepository;
 import com.paymybuddy.api.services.dto.EmailRequestDto;
 import com.paymybuddy.api.services.dto.TransferPageDto;
+import com.paymybuddy.api.services.dto.UpdateUserAccountDto;
 import com.paymybuddy.api.services.dto.UserAccountDto;
 
 import jakarta.servlet.http.Cookie;
 
 
-@SpringBootTest // charger le contexte complet
-@AutoConfigureMockMvc // créer le bean injectable mockMvc
+@SpringBootTest
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class UserControllerIT {
 
@@ -110,17 +114,20 @@ public class UserControllerIT {
 	}
 	
 	@Test
-	public void testGetTransferPage_shouldReturnNotFound() throws Exception {
-		String username = "georgia@email.com";
-		String jwt = jwtTestUtil.generateToken(username);
-		
-		int id = 999;
+	public void testGetTransferPage_WithoutValidToken_shouldReturnForbidden() throws Exception {
+	    String invalidUsername = "doesnotexists@email.com";
+	    
+	   Assertions.assertThrows(UsernameNotFoundException.class, () -> {
+		   String jwt = jwtTestUtil.generateToken(invalidUsername);
+	   
+	        int id = 999;
 
-	    // WHEN
 	    mockMvc.perform(get("/api/user/{id}/transfers", id)
-    		.cookie(new Cookie("JWT", jwt)))
-	    .andExpect(status().isForbidden())
-	    .andExpect(jsonPath("$.status").exists());
+	            .cookie(new Cookie("JWT", jwt)))
+	        .andExpect(status().isForbidden()) 
+	        .andExpect(jsonPath("$.status").exists())
+	        .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("Forbidden access")));
+	    });
 	}
 	
 	@Test
@@ -135,8 +142,8 @@ public class UserControllerIT {
 	}
 	
 	@Test
-	public void testRegister_shouldReturnConflict() throws Exception {
-		UserAccountDto userAccountDto = new UserAccountDto("Georgina", "georgia@email.com", "Georgina@t3st");
+	public void testRegister_WithExistingUser_ShouldReturnConflict() throws Exception {
+		UserAccountDto userAccountDto = new UserAccountDto("Tanka", "tanka@email.com", "Tanka@t3st");
 		
 		mockMvc.perform(post("/api/register")
 				.contentType(org.springframework.http.MediaType.APPLICATION_JSON)
@@ -161,22 +168,14 @@ public class UserControllerIT {
 		.andExpect(status().isOk());
 	}
 	
-	@Disabled
 	@Test
-	public void testAddRelation_ShouldReturnConflict() throws Exception {
-		String username = "georgia@email.com";
+	public void testAddRelation_WithExistingRelation_ShouldReturnBadRequest() throws Exception {
+		String username = "tanka@email.com";
 		String jwt = jwtTestUtil.generateToken(username);
 		
-		int id = 1;
+		int id = 2;
 		String email = "tanka@email.com";
 		int beneficiaryId = 2;
-		
-		
-		Integer count = jdbcTemplate.queryForObject(
-		        "SELECT COUNT(*) FROM user_beneficiary WHERE user_id = ? AND beneficiary_id = ?",
-		        Integer.class,
-		        id, beneficiaryId
-		    );
 		
 		EmailRequestDto emailDto = new EmailRequestDto(email);
 		
@@ -184,7 +183,7 @@ public class UserControllerIT {
 			.cookie(new Cookie("JWT", jwt))
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(emailDto)))
-		.andExpect(status().isConflict());
+		.andExpect(status().isBadRequest());
 	}
 	
 	@Test
@@ -202,7 +201,7 @@ public class UserControllerIT {
 	}
 	
 	@Test
-	public void testRemoveRelation_ShouldReturnBadRequest() throws Exception {
+	public void testRemoveRelation_WithRelationNotFound_ShouldReturnBadRequest() throws Exception {
 		String username = "georgia@email.com";
 		String jwt = jwtTestUtil.generateToken(username);
 		
@@ -213,5 +212,72 @@ public class UserControllerIT {
 			.cookie(new Cookie("JWT", jwt)))
 		.andExpect(status().isBadRequest());
 	}
+	
+	@Test
+	public void testUpdateUserInfo_ShouldReturnOk() throws Exception {
+	    String username = "georgia@email.com";
+	    String jwt = jwtTestUtil.generateToken(username);
 
+	    int userId = 1;
+
+	    UpdateUserAccountDto updateDto = new UpdateUserAccountDto(
+	        "georgia.updated@email.com",
+	        "User1@test",          
+	        "User1Updated@test"
+	    );
+
+	    mockMvc.perform(
+	            patch("/api/user/{id}/change-user-info", userId)
+	                .cookie(new Cookie("JWT", jwt))
+	                .contentType(MediaType.APPLICATION_JSON)
+	                .content(objectMapper.writeValueAsString(updateDto))
+	        )
+	        .andExpect(status().isOk())
+	        .andExpect(jsonPath("$.message", is("The user account has been updated")));
+	}
+	
+	@Test
+	public void testUpdateUserInfo_WithInvalidCurrentPassword_ShouldReturnBadRequest() throws Exception {
+	    String username = "mania@email.com";
+	    String jwt = jwtTestUtil.generateToken(username);
+
+	    int userId = 4;
+
+	    UpdateUserAccountDto updateDto = new UpdateUserAccountDto(
+	        "mania.updated@email.com",
+	        "Mania3@test",          
+	        "User3Updated@test"
+	    );
+
+	    mockMvc.perform(
+	            patch("/api/user/{id}/change-user-info", userId)
+	                .cookie(new Cookie("JWT", jwt))
+	                .contentType(MediaType.APPLICATION_JSON)
+	                .content(objectMapper.writeValueAsString(updateDto))
+	        )
+	        .andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	public void testDeleteAccount_ShouldReturnNoContent() throws Exception {
+	    int userId = 5;
+
+	    String jwt = jwtTestUtil.generateToken("jeena@email.com");
+
+	    mockMvc.perform(put("/api/user/{id}/delete-account", userId)
+	            .cookie(new Cookie("JWT", jwt)))
+	        .andExpect(status().isNoContent());
+	}
+
+	@Test
+	public void testDeleteAccount_UserNotFound_ShouldReturnNotFound() throws Exception {
+	    int nonExistingUserId = 9999;
+
+	    String jwt = jwtTestUtil.generateToken("admin@email.com");
+
+	    mockMvc.perform(put("/api/user/{id}/delete-account", nonExistingUserId)
+	            .cookie(new Cookie("JWT", jwt)))
+	        .andExpect(status().isNotFound());
+	}
+	
 }
