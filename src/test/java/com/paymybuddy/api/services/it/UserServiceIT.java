@@ -25,26 +25,24 @@ public class UserServiceIT {
 	private UserRepository userRepository;
 	
 	@Test
-	void TestSoftDeleteUser() throws UserNotFoundException, UserAlreadySoftDeleted, EmailNotFoundException {
-	        User user = userService.findUserByEmail("georgia@email.com");
-	        Assertions.assertNull(user.getDeletedAt());
-	        
-	        userService.softDeleteUser(user.getId());
-	        
-	        User deletedUser = userRepository.findById(user.getId()).orElseThrow();
-	        		
-	       Assertions.assertNotNull(deletedUser.getDeletedAt());
-	    }
+	void TestSoftDeleteUserShouldPass() throws UserNotFoundException, UserAlreadySoftDeleted, EmailNotFoundException {
+		User user = userService.findUserByEmail("georgia@email.com");
+	    Assertions.assertNull(user.getDeletedAt());
+	    
+	    userService.softDeleteUser(user.getId());
+	    
+	    User deletedUser = userRepository.findById(user.getId()).orElseThrow();
+	    		
+	   Assertions.assertNotNull(deletedUser.getDeletedAt());
+	}
 	
 	@Test
-	void TestDeleteUser_ShouldThrow() throws EmailNotFoundException {
+	void TestDeleteUser_ShouldThrowException() throws EmailNotFoundException {
 		User user = userService.findUserByEmail("georgia@email.com");
-			Assertions.assertNull(user.getDeletedAt());
+		Assertions.assertNull(user.getDeletedAt());
 			
-			
-			
-			Assertions.assertThrows(UserNotSoftDeletedException.class, () -> userService.deleteUser(user.getId()));
-		
+		Assertions.assertThrows(UserNotSoftDeletedException.class, 
+				() -> userService.deleteUser(user.getId()));
 	}
 
 }

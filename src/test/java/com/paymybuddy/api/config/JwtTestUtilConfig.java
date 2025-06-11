@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 @TestConfiguration
 public class JwtTestUtilConfig {
     @Bean
-    public JwtTestUtil jwtTestUtil() {
+    JwtTestUtil jwtTestUtil() {
         return new JwtTestUtil();
     }
 }

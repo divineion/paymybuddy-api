@@ -21,7 +21,6 @@ public class TransferMapperTest {
 	
 	@Test
 	public void testFromTransferToTransferDto_WhenUserIsSender_shouldReturnDtoWithTotalAmount() {
-		// GIVEN
 		User sender = mock(User.class);
 		when(sender.getId()).thenReturn(1);
 		
@@ -33,18 +32,15 @@ public class TransferMapperTest {
 		when(transfer.getReceiver()).thenReturn(receiver);
 		when(transfer.getTotalAmount()).thenReturn(new BigDecimal("14.426"));
 		
-		//WHEN
 		TransferDto dto = mapper.fromTransferToTransferDto(transfer, 1);
 		
 		BigDecimal expectedAmount = new BigDecimal("14.43");
 		
-		//THEN
 		assertEquals(expectedAmount, dto.amount());
 	}
 	
 	@Test
 	public void testFromTransferToTransferDto_WhenUserIsReceiver_shouldReturnDtoWithAmountExcludingFees() {
-		// GIVEN	
 		User sender = mock(User.class);
 		when(sender.getId()).thenReturn(1);
 		when(sender.getUsername()).thenReturn("John");
@@ -58,12 +54,10 @@ public class TransferMapperTest {
 		when(transfer.getReceiver()).thenReturn(receiver);
 		when(transfer.getAmount()).thenReturn(new BigDecimal("50"));
 		
-		//WHEN
 		TransferDto dto = mapper.fromTransferToTransferDto(transfer, 2);
 		
 		BigDecimal expectedAmount = new BigDecimal("50.00");
 		
-		//THEN
 		assertEquals(expectedAmount, dto.amount());
 	}
 }

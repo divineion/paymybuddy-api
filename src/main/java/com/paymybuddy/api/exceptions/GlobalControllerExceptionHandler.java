@@ -117,7 +117,6 @@ public class GlobalControllerExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 				.body(logAndBuildApiError(400, ApiMessages.PASSWORD_MISMATCH, e, LogLevel.ERROR));
 	}
-	// TODO refactor
 
 	@ExceptionHandler
 	public ResponseEntity<ApiError> handleSamePasswordException(SamePasswordException e) {
