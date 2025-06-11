@@ -41,7 +41,6 @@ public class UserControllerRoleNotFoundExceptionIT {
 	 */
 	@Test
 	public void testRegister_shouldReturnInternalServerError() throws Exception, RuntimeException {
-		//given
 		UserAccountDto newAccountdto = new UserAccountDto("NewUser", "newuser@email.com", "Newuser@t3st");
 		
 		when(userService.registerNewUserAccount(newAccountdto))
