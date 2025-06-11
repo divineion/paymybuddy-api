@@ -1,52 +1,94 @@
-//package com.paymybuddy.api.controllers;
-//
-//import static org.mockito.Mockito.mock;
-//import static org.mockito.Mockito.when;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//
-//import java.math.BigDecimal;
-//
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//import org.springframework.context.annotation.Import;
-//import org.springframework.http.MediaType;
-//import org.springframework.test.context.bean.override.mockito.MockitoBean;
-//import org.springframework.test.web.servlet.MockMvc;
-//
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.paymybuddy.api.config.TestSecurityConfig;
-//import com.paymybuddy.api.services.dto.TransferDto;
-//import com.paymybuddy.api.services.dto.TransferRequestDto;
-//import com.paymybuddy.api.services.transfer.TransferService;
-//
-//@Import(TestSecurityConfig.class)
-//@WebMvcTest(TransferController.class)
-//public class TransferControllerTest {
-//	@Autowired
-//	MockMvc mockMvc;
-//	
-//	@Autowired
-//	ObjectMapper objectMapper;
-//	
-//	@MockitoBean
-//	TransferService mockService;
-//	
-//	@Test
-//	public void testCreateTransfer_ShouldReturnOk() throws Exception {
-//		int senderId = 1;
-//		int receiverId = 2;
-//		TransferRequestDto dto = new TransferRequestDto(senderId, receiverId, "test transfer", new BigDecimal("10"));
-//		TransferDto responseDto = mock(TransferDto.class);
-//		
-//		when(mockService.createTransfer(dto)).thenReturn(responseDto);
-//		
-//		mockMvc.perform(post("/api/transfer")
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.content(objectMapper.writeValueAsString(responseDto)))
-//		.andExpect(status().isCreated());
-//	}
-//}
+package com.paymybuddy.api.controllers;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.math.BigDecimal;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import jakarta.servlet.http.Cookie;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.paymybuddy.api.config.JWTService;
+import com.paymybuddy.api.config.JwtTestUtil;
+import com.paymybuddy.api.services.dto.TransferRequestDto;
+
+@SpringBootTest
+@AutoConfigureMockMvc 
+@ActiveProfiles("test")
+public class TransferControllerIT {
+	@ Autowired
+	MockMvc mockMvc;
+	
+	@Autowired
+	JWTService jwtservice;
+	
+	@Autowired
+	private JwtTestUtil jwtTestUtil;
+	
+	@Autowired
+	ObjectMapper objectMapper;
+	
+	
+	@Test
+	public void testCreateTransfer_ShouldReturnOk() throws Exception {
+		String sender = "georgia@email.com";
+        String jwt = jwtTestUtil.generateToken(sender);
+
+		int senderId = 1;
+		int receiverId = 2;
+		 BigDecimal amount = new BigDecimal("10.00");
+		
+		TransferRequestDto dto = new TransferRequestDto(senderId, receiverId, "test transfer", amount);
+		
+		 mockMvc.perform(post("/api/transfer")
+	                .cookie(new Cookie("JWT", jwt))
+	                .contentType(MediaType.APPLICATION_JSON)
+	                .content(objectMapper.writeValueAsString(dto)))
+	            .andExpect(status().isCreated());
+	}
+
+	@Test
+	public void testCreateTransfer_InsufficientAmount_ShouldReturnBadRequest() throws Exception {
+		String sender = "georgia@email.com";
+		String jwt = jwtTestUtil.generateToken(sender);
+		
+		int senderId = 1;
+		int receiverId = 2;
+		BigDecimal amount = new BigDecimal("0.50");
+		
+		TransferRequestDto dto = new TransferRequestDto(senderId, receiverId, "test transfer", amount);
+		
+		mockMvc.perform(post("/api/transfer")
+				.cookie(new Cookie("JWT", jwt))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto)))
+		.andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	public void testCreateTransfer_InsufficientBalance_ShouldReturnBadRequest() throws Exception {
+		String sender = "georgia@email.com";
+		String jwt = jwtTestUtil.generateToken(sender);
+		
+		int senderId = 1;
+		int receiverId = 2;
+		BigDecimal amount = new BigDecimal("2500.00");
+		
+		TransferRequestDto dto = new TransferRequestDto(senderId, receiverId, "test transfer", amount);
+		
+		mockMvc.perform(post("/api/transfer")
+				.cookie(new Cookie("JWT", jwt))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto)))
+		.andExpect(status().isBadRequest());
+	}
+}
 
 
