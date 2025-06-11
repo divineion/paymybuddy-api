@@ -10,9 +10,9 @@ public record UserLoginDto(
 		@Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}")
 		String username, 
 		
-		@Size(min = 8, max = 128, message = "The password must contain between 8 and 128 characters")
+		@Size(min = 8, max = 128, message = "The password must contain between 8 and 30 characters")
 		@Pattern(
-		        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&_]).{8,128}$",
+		        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&_]).{8,30}$",
 		        message = "The password must contain at least one upper, one lower, one number and one special character."
 		    )
 		@NotBlank
