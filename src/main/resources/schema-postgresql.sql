@@ -18,8 +18,6 @@ CREATE TABLE IF NOT EXISTS paymybuddy.role (
     CONSTRAINT name_UNIQUE UNIQUE (name)
 );
 
-
-
 -- -----------------------------------------------------
 -- Table paymybuddy.app_user
 -- -----------------------------------------------------
@@ -148,3 +146,4 @@ UPDATE paymybuddy.app_user u
 SET balance = balance + 18
 WHERE u.id = 2;
 
+COMMIT;

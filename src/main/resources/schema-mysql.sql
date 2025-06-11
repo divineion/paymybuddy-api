@@ -15,7 +15,6 @@ DROP SCHEMA IF EXISTS `paymybuddy`;
 CREATE SCHEMA IF NOT EXISTS `paymybuddy` DEFAULT CHARACTER SET utf8 ;
 USE `paymybuddy` ;
 
-
 -- -----------------------------------------------------
 -- Table `paymybuddy`.`app_role`
 -- -----------------------------------------------------
@@ -74,7 +73,6 @@ CREATE TABLE IF NOT EXISTS `paymybuddy`.`transfer` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
-
 -- -----------------------------------------------------
 -- Table `paymybuddy`.`user_beneficiary`
 -- -----------------------------------------------------
@@ -104,7 +102,8 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- -----------------------------------------------------
 -- Data for table `paymybuddy`.`role`
 -- -----------------------------------------------------
-INSERT INTO `role` (id, name) VALUES (1, 'ROLE_USER'), (2, 'ROLE_ADMIN');
+INSERT INTO `role` (id, name) 
+VALUES (1, 'ROLE_USER'), (2, 'ROLE_ADMIN');
 
 
 -- -----------------------------------------------------
@@ -148,11 +147,26 @@ LIMIT 1;
 -- -----------------------------------------------------
 -- Data for table `paymybuddy`.`user_beneficiary`
 -- -----------------------------------------------------
-INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES (1, 2);
-INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES (1, 3);
-INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`) VALUES (3, 4);
+INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`)
+SELECT * FROM (SELECT 1, 2) AS tmp
+WHERE NOT EXISTS (
+	SELECT 1 FROM `paymybuddy`.`user_beneficiary` WHERE user_id = 1 AND beneficiary_id = 2
+)
+LIMIT 1;
 
+INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`)
+SELECT * FROM (SELECT 1, 3) AS tmp
+WHERE NOT EXISTS (
+	SELECT 1 FROM `paymybuddy`.`user_beneficiary` WHERE user_id = 1 AND beneficiary_id = 3
+)
+LIMIT 1;
 
+INSERT INTO `paymybuddy`.`user_beneficiary` (`user_id`, `beneficiary_id`)
+SELECT * FROM (SELECT 3, 4) AS tmp
+WHERE NOT EXISTS (
+	SELECT 1 FROM `paymybuddy`.`user_beneficiary` WHERE user_id = 3 AND beneficiary_id = 4
+)
+LIMIT 1;
 -- -----------------------------------------------------
 -- Update table `paymybuddy`.`transfer`
 -- -----------------------------------------------------
@@ -161,7 +175,16 @@ START TRANSACTION;
 USE `paymybuddy`;
 
 INSERT INTO `paymybuddy`.`transfer` (`sender`, `receiver`, `description`, `amount`, `date`) 
-SELECT 1, 2, 'entrée parc aquatique', 18, NOW();
+SELECT * FROM (SELECT 1, 2, 'entrée parc aquatique', 18, NOW()) AS tmp
+WHERE NOT EXISTS (
+	SELECT 1 FROM `paymybuddy`.`transfer`
+	WHERE sender = 1
+	  AND receiver = 2
+	  AND description = 'entrée parc aquatique'
+	  AND amount = 18
+	  AND DATE(date) = CURDATE()
+)
+LIMIT 1;
 
 -- -----------------------------------------------------
 -- Update app_user (sender) balance after transfer
