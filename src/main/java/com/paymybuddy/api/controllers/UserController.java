@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,21 +17,18 @@ import com.paymybuddy.api.annotations.AuthenticatedUserOrAdmin;
 import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
-import com.paymybuddy.api.exceptions.ForbiddenAccessException;
 import com.paymybuddy.api.exceptions.PasswordMismatchException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
-import com.paymybuddy.api.exceptions.SameEmailException;
-import com.paymybuddy.api.exceptions.SamePasswordException;
+
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserAlreadySoftDeleted;
 import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.services.dto.ApiResponse;
 import com.paymybuddy.api.services.dto.BeneficiaryDto;
-import com.paymybuddy.api.services.dto.ChangeEmailDto;
-import com.paymybuddy.api.services.dto.ChangePasswordDto;
 import com.paymybuddy.api.services.dto.EmailRequestDto;
 import com.paymybuddy.api.services.dto.TransferPageDto;
+import com.paymybuddy.api.services.dto.UpdateUserAccountDto;
 import com.paymybuddy.api.services.dto.UserAccountDto;
 import com.paymybuddy.api.services.dto.UserDto;
 import com.paymybuddy.api.services.user.UserService;
@@ -93,16 +91,9 @@ public class UserController {
 	}
 	
 	@AuthenticatedUser
-	@PutMapping("/api/user/{id}/change-password")
-	public ResponseEntity<ApiResponse> updatePassword(@PathVariable int id, @Valid @RequestBody ChangePasswordDto changePasswordDto) throws UserNotFoundException, PasswordMismatchException, SamePasswordException {
-		service.changePassword(id, changePasswordDto);
-		return ResponseEntity.ok(new ApiResponse(ApiMessages.PASSWORD_SUCCESSFULLY_UPDATED));
-	}
-	
-	@AuthenticatedUser
-	@PutMapping("/api/user/{id}/change-email")
-	public ResponseEntity<ApiResponse> updateEmail(@PathVariable int id, @Valid @RequestBody ChangeEmailDto changeEmailDto) throws UserNotFoundException, EmailNotFoundException, SameEmailException, ForbiddenAccessException {
-		service.changeEmail(id, changeEmailDto);
-		return ResponseEntity.ok(new ApiResponse(ApiMessages.EMAIL_SUCCESSFULLY_UPDATED));
+	@PatchMapping("/api/user/{id}/change-user-info")
+	public ResponseEntity<ApiResponse> updateUserInfo(@PathVariable int id, @Valid @RequestBody UpdateUserAccountDto updateAccountInfoDto) throws UserNotFoundException, PasswordMismatchException {
+		service.updateUserAccount(id, updateAccountInfoDto);
+		return ResponseEntity.ok(new ApiResponse(ApiMessages.USER_ACCOUNT_SUCCESSFULLY_UPDATED));
 	}
 }
