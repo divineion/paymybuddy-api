@@ -18,29 +18,32 @@ Le diagramme EER ci-dessous décrit la structure des tables et les relations ent
 ### Tables :
 
 - **role** : contient les informations sur les rôles des utilisateurs.    
-*id* : identifiant unique du rôle, auto-incrémenté,
-*name* : nom du rôle (exemple : user, admin). 
+*id* : identifiant unique du rôle, auto-incrémenté,   
+*name* : nom du rôle (exemple : user, admin).    
+   
 
 - **user** : contient les informations sur les utilisateurs.    
 *id* : identifiant unique de l'utilisateur, auto-incrémenté   
 *username* : nom d'utilisateur,   
 *email* : adresse e-mail (ne peut pas être partagée entre plusieurs utilisateurs),   
+*deleted_at* : date de suppression du compte (soft-delete),   
 *password* : mot de passe,   
 *balance* : solde du compte en euros (ne peut pas être négatif),   
-*deleted_at* : date de suppression du compte (soft-delete),   
-*active_email* : colonne calculée dynamiquement à partir des champs `email` et `deleted_at` pour contenir l'adresse e-mail d'un utilisateur actif. Si le compte de l'utilisateur a été supprimé, un nouveau compte avec la même adresse e-mail peut être créé.    
-*role* : role attribué à l'utilisateur (définit ses permissions). 
-**Le champ `role` référence l'identifiant du rôle dans la table role.** 
-**Le champ `active_email` permet de conserver l'unicité de l'adresse e-mail uniquement parmi les comptes utilisateurs actifs** (non supprimés).   
+*active_email* : colonne virtuelle calculée dynamiquement à partir des champs `email` et `deleted_at` pour contenir l'adresse e-mail d'un utilisateur actif. Si le compte de l'utilisateur a été supprimé, un nouveau compte avec la même adresse e-mail peut être créé.    
+*role* : role attribué à l'utilisateur (définit ses permissions).   
+    
+**Le champ `role` référence l'identifiant du rôle dans la table role.**    
+**Le champ `active_email` permet de conserver l'unicité de l'adresse e-mail uniquement parmi les comptes utilisateurs actifs** (non supprimés).    
    
+      
 - **transfer** : enregistre les transferts entre utilisateurs.   
 *id* : identifiant unique de la transaction, auto-incrémenté,   
 *sender* : identifiant de l'utilisateur qui envoie de l'argent,   
 *receiver* : identifiant de l'utilisateur qui reçoit de l'argent,   
-*description* : description de la transaction qui permet de renseigner un motif,   
+*description* : description de la transaction (motif),   
 *amount_excluding_fees* : montant hors frais de la transaction : c'est le montant qui sera versé au bénéficiaire,   
 *fees* : frais de service appliqués à chaque transaction (par défaut : 0,5%),   
-*total_amount* : montant total de la transaction (par défaut, le montant versé au bénéficiaire + les frais).     
+*total_amount* : colonne virtuelle générée automatiquement, montant total de la transaction (par défaut, le montant versé au bénéficiaire + les frais).     
   
 Les transferts sont liés aux utilisateurs via les clés étrangères `sender` et `receiver` qui font référence à `user.id`. 
    
@@ -54,17 +57,16 @@ La table `user_beneficiary` contient ainsi uniquement des associations entre ide
 
 ### Initialisation du schéma de la base de données et données initiales
 
-Le mot de passe administrateur doit être défini via la propriété `admin.default.password`.
+Le mot de passe administrateur doit être défini via la propriété `admin.default.password` dans `application.properties`.
 
 La configuration courante du projet dans [application.properties](src/main/resources/application.properties) est définie sur `mysql`.   
 [Le schéma](src/main/resources/schema-mysql.sql), conçu pour être utilisé avec MySQL, contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), et un **jeu de données initial**.
 
 [Une version PostgreSQL du schéma](src/main/resources/schema-postgresql.sql) initial peut être initialisée en définissant le profil `postgresql`.
 
-Une fois l'application lancée et les données initialisées via le schéma SQL, la configuration doit être modifiée pour permettre la persistance des données par Hibernate. Les propriétés suivantes doivent être définies ainsi : 
+Une fois l'application lancée et les données initialisées via le schéma SQL, la configuration peut être modifiée pour éviter la réinitialisation de la table à chaque lancement de l'application : 
 
 `spring.sql.init.mode=never`   
-`spring.jpa.hibernate.ddl-auto=update`
 
 ### Génération des clés secrètes JWT
 L'authentification JWT est signée via une paire de clés secrètes.   
@@ -72,7 +74,7 @@ L'authentification JWT est signée via une paire de clés secrètes.
 Générer une clé privée : <code>openssl genrsa -out private_key.pem 2048</code>   
 Génerer la clé publique correspondante : <code>openssl rsa -pubout -in private_key.pem -out public_key.pem</code>   
 
-Les deux fichiers doivent être placés dans dans src/main/resources/jwt-keys/.
+Les deux fichiers doivent être placés dans dans `src/main/resources/jwt-keys/`.
 
 ### Démarrage de l'application
 

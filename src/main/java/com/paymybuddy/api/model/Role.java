@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 public class Role {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Id
-	int id;
+	Integer id;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length=60)
@@ -22,12 +22,11 @@ public class Role {
 	
 	public Role() {}
 
-	public Role(int id, RoleName name) {
-		this.id = id;
+	public Role(RoleName name) {
 		this.name = name;
 	}
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 

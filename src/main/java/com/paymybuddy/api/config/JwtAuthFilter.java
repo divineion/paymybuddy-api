@@ -37,10 +37,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		String path = request.getRequestURI();
+		if (path.equals("/api/logout")) {
+		    filterChain.doFilter(request, response); 
+		    return;
+		}
 
 		String token = null;
-
-		// 1) lire le cookie "JWT"
 		if (request.getCookies() != null) {
 			for (Cookie cookie : request.getCookies()) {
 				if ("JWT".equals(cookie.getName())) {
@@ -50,22 +53,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			}
 		}
 
-		// 2)si token présent 
 		if (token != null) {
-			// 3)extraire le username du token
 			String username = jwtService.extractUsername(token);
 
 			if (username != null  && SecurityContextHolder.getContext().getAuthentication() == null) {
-				// 4) charger les infos utilisateur
 				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-				// 5)vérifier que le token est valide par rapport au userDetails
 				if (jwtService.isTokenValid(token, userDetails)) {
 					UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
 							null, userDetails.getAuthorities());
 					authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-					// 6)mettre dans le securitycontext
 					SecurityContextHolder.getContext().setAuthentication(authToken);
 				}
 			}

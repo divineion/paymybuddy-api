@@ -2,6 +2,7 @@ package com.paymybuddy.api.config;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
@@ -29,17 +33,18 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
-@Configuration // indiquera à Spring qu'il y a des beans dans la classe
-@EnableWebSecurity // permet de configurer des éléments de sécurity
+@Configuration 
+@EnableWebSecurity
 public class SecurityConfig {
-	// permettre de modéliser une chaîne de filtres de sécurité
-	@Bean // enregistre la valeur de retour en tant que Bean
+
+	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
-		return http.cors(cors -> cors.configure(http))
+		return 
+				
+				http
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.csrf(csrf -> csrf.disable())
-				// STATELESS pour ne pas créer de session
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				// méthode  requestMatchers()  pour définir l'association des rôles USER (utilisateur) et ADMIN (administrateur) avec des pages
 				.authorizeHttpRequests(auth -> {
 					auth.requestMatchers("/api/login_check").permitAll();
 					auth.requestMatchers("/api/logout").permitAll();
@@ -48,7 +53,6 @@ public class SecurityConfig {
 					auth.requestMatchers("/api/admin/**").hasRole("ADMIN");
 					auth.requestMatchers("/api/**").authenticated();
 				})
-				// activer OAuth2 et le support jwt
 				.oauth2ResourceServer(
 						(oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -60,19 +64,13 @@ public class SecurityConfig {
 	    return new BCryptPasswordEncoder();
 	}
 	
-	//cofngiruer l'encoder et le decoder
-	//injecter les clés à partir de RsaKeyConfig
-	// injecter la clé publique retournée par la méthode bean déclarée dans RsaKeyConfig
 	@Bean
 	JwtDecoder jwtDecoder(RSAPublicKey publicKey) {
-		// Use the given public key to validate JWTs
 		return NimbusJwtDecoder.withPublicKey(publicKey).build();
 	}
 	
-	// https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/oauth2/jwt/NimbusJwtEncoder.html
 	@Bean
 	JwtEncoder jwtEncoder(RSAPublicKey publickey, RSAPrivateKey privateKey) {
-		// créer une json web key avec clé publique + privée
 		RSAKey jwk = new RSAKey.Builder(publickey)
 				.privateKey(privateKey)
 				.keyUse(KeyUse.SIGNATURE)
@@ -88,20 +86,26 @@ public class SecurityConfig {
 		return config.getAuthenticationManager();
 	}
 	
-	//crée un converter qui permet à Spring Security de lire les rôles (authorities) 
-	//depuis le JWT et de les transformer en authorities utilisables dans le contexte de sécurité
 	@Bean
 	JwtAuthenticationConverter jwtAuthenticationConverter() {
-		// créer un JwtGrantedAuthoritiesConverter pour lire le claim authorities du token
 	    JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 	    grantedAuthoritiesConverter.setAuthoritiesClaimName("authorities");
-	    // role préfixés en BDD/dans le token
 	    grantedAuthoritiesConverter.setAuthorityPrefix("");
 
-	    //créer un JwtAuthenticationConverter et injecter le JwtGrantedAuthoritiesConverter
 	    JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
 	    converter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-	    // utiliser le converter dans la config
 	    return converter;
+	}
+	
+	@Bean
+	CorsConfigurationSource corsConfigurationSource() {
+	    CorsConfiguration configuration = new CorsConfiguration();
+	    configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+	    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+	    configuration.setAllowedHeaders(List.of("*"));
+	    configuration.setAllowCredentials(true);
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", configuration);
+	    return source;
 	}
 }
