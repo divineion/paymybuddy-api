@@ -1,4 +1,4 @@
-package com.paymybuddy.api.services.transfer;
+package com.paymybuddy.api.services.unit;
 
 import static org.mockito.Mockito.when;
 
@@ -16,6 +16,7 @@ import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.repositories.UserRepository;
 import com.paymybuddy.api.services.dto.TransferRequestDto;
+import com.paymybuddy.api.services.transfer.TransferService;
 
 @ExtendWith(MockitoExtension.class)
 public class TransferServiceTest {

@@ -1,4 +1,4 @@
-package com.paymybuddy.api.services.user;
+package com.paymybuddy.api.services.unit;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -20,6 +20,7 @@ import com.paymybuddy.api.exceptions.UserNotFoundException;
 import com.paymybuddy.api.exceptions.UserNotSoftDeletedException;
 import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.repositories.UserRepository;
+import com.paymybuddy.api.services.user.UserService;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
