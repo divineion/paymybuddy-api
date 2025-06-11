@@ -4,6 +4,19 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### RSA key ###
+src/main/resources/jwt-keys/public_key.pem
+src/main/resources/jwt-keys/private_key_pkcs8.pem
+
+### SQL data initialization files ###
+docs/mysql/data.sql
+docs/postgresql/data.sql
+
+### application.properties files ###
+config/application-mysql.properties
+config/application-postgresql.properties
+config/application-hibernate-init.properties
+
 ### STS ###
 .apt_generated
 .classpath
@@ -31,3 +44,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### log file ###
+logs/requests.log
+

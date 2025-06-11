@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "jwt.public-key-location",
+    "type": "java.lang.String",
+    "description": "Classpath location of the RSA public key used to verify JWT signatures."
+  },
+  {
+    "name": "jwt.private-key-location",
+    "type": "java.lang.String",
+    "description": "Classpath location of the RSA private key used to sign JWT tokens."
+  },
+  {
+    "name": "admin.default.password",
+    "type": "java.lang.String",
+    "description": "The default admin password used to initialize a user with the ADMIN role."
+  }
+]}
