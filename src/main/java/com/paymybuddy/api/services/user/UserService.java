@@ -12,12 +12,9 @@ import com.paymybuddy.api.constants.ApiMessages;
 import com.paymybuddy.api.constants.UserManagementSettings;
 import com.paymybuddy.api.exceptions.EmailAlreadyExistsException;
 import com.paymybuddy.api.exceptions.EmailNotFoundException;
-import com.paymybuddy.api.exceptions.ForbiddenAccessException;
 import com.paymybuddy.api.exceptions.PasswordMismatchException;
 import com.paymybuddy.api.exceptions.RelationAlreadyExistsException;
 import com.paymybuddy.api.exceptions.RelationNotFoundException;
-import com.paymybuddy.api.exceptions.SameEmailException;
-import com.paymybuddy.api.exceptions.SamePasswordException;
 import com.paymybuddy.api.exceptions.SelfRelationException;
 import com.paymybuddy.api.exceptions.UserAlreadySoftDeleted;
 import com.paymybuddy.api.exceptions.UserDeletionNotAllowedException;
@@ -26,14 +23,16 @@ import com.paymybuddy.api.exceptions.UserNotSoftDeletedException;
 import com.paymybuddy.api.model.User;
 import com.paymybuddy.api.repositories.UserRepository;
 import com.paymybuddy.api.services.dto.BeneficiaryDto;
-import com.paymybuddy.api.services.dto.ChangeEmailDto;
 import com.paymybuddy.api.services.dto.ChangePasswordDto;
 import com.paymybuddy.api.services.dto.EmailRequestDto;
 import com.paymybuddy.api.services.dto.TransferDto;
 import com.paymybuddy.api.services.dto.TransferPageDto;
+import com.paymybuddy.api.services.dto.UpdateUserAccountDto;
 import com.paymybuddy.api.services.dto.UserAccountDto;
 import com.paymybuddy.api.services.dto.UserDto;
 import com.paymybuddy.api.services.transfer.TransferMapper;
+
+import jakarta.validation.Valid;
 
 @Service
 public class UserService {
@@ -114,8 +113,6 @@ public class UserService {
 
 		return userTransferInfo;
 	}
-
-	// POST REQUESTS
 
 	/**
 	 * Adds a beneficiary to the current user's list.
@@ -241,25 +238,6 @@ public class UserService {
 		userRepository.softDeleteUserById(now, id);
 	}
 
-	@Transactional
-	public void changePassword(int id, ChangePasswordDto changePasswordDto)
-			throws UserNotFoundException, PasswordMismatchException, SamePasswordException {
-		User user = userRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
-
-		if (!passwordEncoder.matches(changePasswordDto.oldPassword(), user.getPassword())) {
-			throw new PasswordMismatchException(ApiMessages.PASSWORD_MISMATCH);
-		}
-
-		if (changePasswordDto.oldPassword().equals(changePasswordDto.newPassword())) {
-			throw new SamePasswordException(ApiMessages.SAME_PASSWORD);
-		}
-
-		String encodedNewPassword = passwordEncoder.encode(changePasswordDto.newPassword());
-
-		userRepository.updatePasswordById(id, encodedNewPassword);
-	}
-
 	/**
 	 * ADMIN ONLY Updates the password of a user by their id. This method is
 	 * intended for administrative purposes only and does not require the old
@@ -278,21 +256,19 @@ public class UserService {
 		userRepository.updatePasswordById(id, encodedPassword);
 	}
 
+
 	@Transactional(rollbackFor = Exception.class)
-	public void changeEmail(int id, ChangeEmailDto changeEmailDto) throws UserNotFoundException, EmailNotFoundException, SameEmailException, ForbiddenAccessException {
-		userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
-		String currentEmail = changeEmailDto.oldEmail();
+	public void updateUserAccount(int id, @Valid UpdateUserAccountDto updateAccountInfoDto) throws UserNotFoundException, PasswordMismatchException {
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(ApiMessages.USER_NOT_FOUND));
 		
-		User userByActiveEmail = userRepository.findByActiveEmail(currentEmail).orElseThrow(() -> new EmailNotFoundException(ApiMessages.EMAIL_NOT_FOUND));
-		
-		if (userByActiveEmail.getId() != id) {
-			throw new ForbiddenAccessException(ApiMessages.FORBIDDEN_ACCESS);
+		if (!passwordEncoder.matches(updateAccountInfoDto.currentPassword(), user.getPassword())) {
+			throw new PasswordMismatchException(ApiMessages.PASSWORD_MISMATCH);
 		}
 		
-		if (changeEmailDto.newEmail().equals(currentEmail)) {
-			throw new SameEmailException(ApiMessages.SAME_EMAIL);
-		}
+		String newEncodedPassword = passwordEncoder.encode(updateAccountInfoDto.newPassword());
+		userRepository.updatePasswordById(id, newEncodedPassword);
 		
-		userRepository.updateEmail(id, changeEmailDto.newEmail());
+		String newEmail = updateAccountInfoDto.email();
+		userRepository.updateEmail(id, newEmail);
 	}
 }
