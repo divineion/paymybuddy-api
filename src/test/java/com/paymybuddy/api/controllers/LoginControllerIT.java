@@ -2,7 +2,6 @@ package com.paymybuddy.api.controllers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +19,6 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.paymybuddy.api.config.CustomUserDetailsService;
 import com.paymybuddy.api.config.JwtTestUtil;
-import com.paymybuddy.api.repositories.UserRepository;
 
 import jakarta.servlet.http.Cookie;
 
@@ -28,7 +26,7 @@ import jakarta.servlet.http.Cookie;
 @SpringBootTest // charger le contexte complet
 @AutoConfigureMockMvc // créer le bean injectable mockMvc
 @ActiveProfiles("test")
-public class LoginControllerTest {
+public class LoginControllerIT {
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -41,10 +39,6 @@ public class LoginControllerTest {
 	
 	@Autowired
 	private JwtTestUtil jwtTestUtil;
-	
-	//temp
-	@Autowired
-	UserRepository userRepo;
 	
 	@Test
 	public void testLoginCheck_ShouldReturnJwt() throws Exception {
