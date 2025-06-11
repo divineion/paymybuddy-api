@@ -35,35 +35,45 @@ public class LoginController {
 		this.userService = userService;
 	}
 	
-	// récupérer l'Authentication 
-	// JWTService founit le token
+	/**
+	 * Authenticates the user based on provided credentials and generates a JWT token.
+	 * <p>
+	 * Steps performed:
+	 * <ol>
+	 *   <li>Creates an authentication token from the username and password.</li>
+	 *   <li>Authenticates the token using AuthenticationManager.</li>
+	 *   <li>Retrieves the authenticated user details from the authentication principal.</li>
+	 *   <li>Generates a JWT token for the authenticated user.</li>
+	 *   <li>Creates an HTTP-only cookie containing the JWT token with appropriate settings.</li>
+	 *   <li>Sets the cookie in the response header.</li>
+	 * </ol>
+	 *
+	 * @param loginDto a {@link UserLoginDto} containing username and password, validated before processing
+	 * @return {@link ResponseEntity} with JWT token in body and HTTP-only cookie header
+	 * @throws AuthenticationException if authentication fails, triggering a 401 Unauthorized
+	 */
 	@PostMapping("/api/login_check")
 	public ResponseEntity<String> getToken(@Valid @RequestBody UserLoginDto loginDto) {
 		Authentication authToken = new UsernamePasswordAuthenticationToken(loginDto.username(), loginDto.password());
 		
-		// d'aborsd authentifier le user - retourne 401 Unauthorized si erreur d'authentification
 		Authentication authenticatedUser = authenticationManager.authenticate(authToken);
 		
-		// injecter le CustomUserDetails comme principal
 	    CustomUserDetails userDetails = (CustomUserDetails) authenticatedUser.getPrincipal();
 
-	    //passzr le CustomUserDetails pour l'utiliser dans le JWTService
 		String token = jwtService.generateToken(userDetails);
 		
-		//https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseCookie.html
 		ResponseCookie cookie = ResponseCookie.from("JWT", token)
 				.httpOnly(true)
 				.maxAge(ConfigConstants.DEV_ENV_COOKIE_DURATION_IN_SECONDS)
 				.secure(false)
-				.path("/") // définit les routes sur lesquelles le cookie sera envoyé depuis le front (par défaut le chemin de la requête qui l'a envoyé)
+				.path("/")
 				.build();
 		
 		
 		return ResponseEntity
 				.status(HttpStatus.OK)
-				.header(HttpHeaders.SET_COOKIE, cookie.toString()) //convertir le cookie en string 
-				// TODO remove token 
-				.body(token); 
+				.header(HttpHeaders.SET_COOKIE, cookie.toString()) 
+				.build(); 
 	}
 
 	/**

@@ -57,7 +57,6 @@ public class UserController {
 		TransferPageDto transferPageInfo;
 		transferPageInfo = service.findUserTransferPageInfo(id);
 		return ResponseEntity.ok(transferPageInfo);
-
 	}
 
 	@PostMapping("/api/register")
