@@ -1,100 +1,86 @@
-## Le projet
+# PayMyBuddy API
+Cette API REST sécurisée gère les transferts d'argent entre particuliers, le solde des comptes, les relations entre bénéficiaires ainsi que l'authentification et l'autorisation des utilisateurs.
+## Architecture
+### Modèle Physique de Données
+![diagramme EER représentant les tables de la base de données paymybuddy et leurs relations.](paymybuddy.png "Diagramme")  
 
-Prototype d'une application de transfert d'argent entre utilisateurs. 
+## 1. Rôle
+L'application fournit les fonctionnalités suivantes :
+ - Authentification : émission et validation de jetons stockés dans des cookies `HttpOnly`. Contrôle d'accès par programmation orientée aspect (AOP) garantissant l'isolation des données par utilisateur (`@AuthenticatedUser`, `@AdminOnly`).
+ - Gestion des relations (bénéficiaires) : ajout/suppression de contacts par e-mail avec validation d'unicité et interdiction d'auto-liaison.
+ - Transferts d'argent : exécution des débits/crédits avec prélèvement automatique des frais de service (0,5 %).
+ - Cycle de vie des comptes : gestion du soft-delete (désactivation d'e-mail pour réinscription possible) et suppression définitive sécurisée (avec délai de rétention).
 
-## L'application
+## 2. Choix techniques
+ - Langage : **Java 21**
+ - Framework : **Spring Boot 3.5.0** (Spring MVC, Spring Security, Spring Data JPA)
+ - Sécurité : **Spring Security** OAuth2 Resource Server, Nimbus Jose JWT
+ - Base de données : **MySQL 8** / **PostgreSQL** (support multi-profils avec scripts SQL d'initialisation)
+ - Tests & Couverture : **JUnit 5**, Spring Security Test, JaCoCo
+ - Journalisation : Log4j2
 
-Les utilisateurs doivent pouvoir :
- - s'inscrire à l'aide d'un identifiant e-mail unique,
- - se connecter avec leurs identifiants personnels,
- - ajouter d'autres utilisateurs à leur bénéficiaires pour leur transférer de l'argent. 
+## 3. Configuration
+L'application charge sa configuration depuis `src/main/resources/application.properties` ou des profils dédiés (`mysql`, `postgresql`).
 
-## Modèle Physique de Données
+`spring.profiles.active` | Profil de base de données actif | `mysql` ou `postgresql`   
+`spring.datasource.url` | URL JDBC de connexion BDD | `jdbc:mysql://localhost:3306/paymybuddy?serverTimezone=UTC`  
+`spring.datasource.username` | Identifiant BDD | *À renseigner*   
+`spring.datasource.password` | Mot de passe BDD | *À renseigner*   
+`spring.sql.init.mode` | Initialisation du schéma SQL (`always` au 1er boot, puis `never`) | `always`    
+`admin.default.password` | Mot de passe initial du compte `admin@email.com` | *À renseigner*   
+`jwt.public-key-location` | Chemin vers la clé publique RSA | `classpath:jwt-keys/public_key.pem`    
+`jwt.private-key-location` | Chemin vers la clé privée RSA | `classpath:jwt-keys/private_key.pem`   
 
-Le diagramme EER ci-dessous décrit la structure des tables et les relations entre elles dans la base de données.
+## 4. Principaux endpoints
+### Authentification & Session
 
-![diagramme EER représentant les tables de la base de données paymybuddy et leurs relations.](paymybuddy.png "Diagramme") 
+ - `GET /api/auth_check` : vérification de la session active et renvoi des informations de l'utilisateur connecté.  
+ 
 
-### Tables :
+ - `POST /api/register` : inscription d'un nouvel utilisateur.   
+ - `POST /api/login_check` : authentification et injection du cookie de session `JWT`.    
+ - `POST /api/logout` : révocation du cookie de session.   
 
-- **role** : contient les informations sur les rôles des utilisateurs.    
-*id* : identifiant unique du rôle, auto-incrémenté,   
-*name* : nom du rôle (exemple : user, admin).    
-   
+### Gestion du compte utilisateur et des relations 
 
-- **user** : contient les informations sur les utilisateurs.    
-*id* : identifiant unique de l'utilisateur, auto-incrémenté   
-*username* : nom d'utilisateur,   
-*email* : adresse e-mail (ne peut pas être partagée entre plusieurs utilisateurs),   
-*deleted_at* : date de suppression du compte (soft-delete),   
-*password* : mot de passe,   
-*balance* : solde du compte en euros (ne peut pas être négatif),   
-*active_email* : colonne virtuelle calculée dynamiquement à partir des champs `email` et `deleted_at` pour contenir l'adresse e-mail d'un utilisateur actif. Si le compte de l'utilisateur a été supprimé, un nouveau compte avec la même adresse e-mail peut être créé.    
-*role* : role attribué à l'utilisateur (définit ses permissions).   
-    
-**Le champ `role` référence l'identifiant du rôle dans la table role.**    
-**Le champ `active_email` permet de conserver l'unicité de l'adresse e-mail uniquement parmi les comptes utilisateurs actifs** (non supprimés).    
-   
-      
-- **transfer** : enregistre les transferts entre utilisateurs.   
-*id* : identifiant unique de la transaction, auto-incrémenté,   
-*sender* : identifiant de l'utilisateur qui envoie de l'argent,   
-*receiver* : identifiant de l'utilisateur qui reçoit de l'argent,   
-*description* : description de la transaction (motif),   
-*amount_excluding_fees* : montant hors frais de la transaction : c'est le montant qui sera versé au bénéficiaire,   
-*fees* : frais de service appliqués à chaque transaction (par défaut : 0,5%),   
-*total_amount* : colonne virtuelle générée automatiquement, montant total de la transaction (par défaut, le montant versé au bénéficiaire + les frais).     
+ - `GET /api/user/{id}` : consultation du profil utilisateur (protégé par AOP `@AuthenticatedUser`).     
+ - `GET /api/user/{id}/transfers` : récupération de la page de transfert (solde, liste des bénéficiaires, historiques des transferts émis et reçus).
+ 
+ 
+ - `POST /api/user/{id}/add-relation` : ajout d'un bénéficiaire via son e-mail.    
+
+
+ - `PATCH /api/user/{id}/change-user-info` : modification de l'e-mail et/ou du mot de passe.  
+ - `PUT /api/user/{id}/delete-account` : désactivation logique du compte (soft-delete).
+
+ 
+  - `DELETE /api/user/{id}/remove-relation/{beneficiaryId}` : suppression d'un bénéficiaire. 
   
-Les transferts sont liés aux utilisateurs via les clés étrangères `sender` et `receiver` qui font référence à `user.id`. 
-   
-- **user_beneficiary** : gère les relations entre utilisateurs.     
-*user_id* : identifiant de l'utilisateur qui a ajouté un bénéficiaire,   
-*beneficiary_id* : identifiant de l'utilisateur ajouté aux bénéficiaires (la réciprocité n'est pas obligatoire).   
-   
-Les relations entre utilisateurs sont gérées via les clés étrangères `user_id` et `beneficiary_id` qui font toutes deux référence à `user.id`.   
-La table `user_beneficiary` contient ainsi uniquement des associations entre identifiants d'utilisateurs.   
-**Chaque couple (user_id, beneficiary_id) est unique** : un même bénéficiaire ne peut pas être ajouté plusieurs fois par le même utilisateur.   
+### Transferts d'argent
+ - `POST /api/transfer` : exécution d'un virement entre le compte émetteur et un bénéficiaire validé (vérification de solde, montant min. et calcul automatique des frais de 0,5 %).
 
-### Initialisation du schéma de la base de données et données initiales
+### Administration (`ROLE_ADMIN`)
+ - `PUT /api/admin/user/{id}/change-password` : réinitialisation administrative du mot de passe.
+ - `DELETE /api/admin/user/{id}` : suppression définitive (hard delete) d'un compte soft-deleted après expiration du délai légal.
 
-Le mot de passe administrateur doit être défini via la propriété `admin.default.password` dans `application.properties`.
+## 5. Démarrage rapide
+### Prérequis
+ - Java 21 SDK
+ - Maven 3.9+
+ - Instance MySQL 8 ou PostgreSQL démarrée
+ - OpenSSL (pour la génération des clés RSA)
 
-La configuration courante du projet dans [application.properties](src/main/resources/application.properties) est définie sur `mysql`.   
-[Le schéma](src/main/resources/schema-mysql.sql), conçu pour être utilisé avec MySQL, contient non seulement la définition complète des tables et des relations (clés primaires, clés étrangères, contraintes), et un **jeu de données initial**.
+### 1. Générer des clés secrètes RSA
+Créez le dossier `src/main/resources/jwt-keys/` et générez la paire de clés cryptographiques :
 
-[Une version PostgreSQL du schéma](src/main/resources/schema-postgresql.sql) initial peut être initialisée en définissant le profil `postgresql`.
+```
+#générer la clé privée RSA 2048 bits
+openssl genrsa -out src/main/resources/jwt-keys/private_key.pem 2048
 
-Une fois l'application lancée et les données initialisées via le schéma SQL, la configuration peut être modifiée pour éviter la réinitialisation de la table à chaque lancement de l'application : 
+#extraire la clé publique correspondante
+openssl rsa -pubout -in src/main/resources/jwt-keys/private_key.pem -out src/main/resources/jwt-keys/public_key.pem
+```
 
-`spring.sql.init.mode=never`   
 
-### Génération des clés secrètes JWT
-L'authentification JWT est signée via une paire de clés secrètes.   
-  
-Générer une clé privée : <code>openssl genrsa -out private_key.pem 2048</code>   
-Génerer la clé publique correspondante : <code>openssl rsa -pubout -in private_key.pem -out public_key.pem</code>   
-
-Les deux fichiers doivent être placés dans dans `src/main/resources/jwt-keys/`.
-
-### Démarrage de l'application
-
-#### Depuis un terminal
-
-Démarrer l'application avec <code>./mvnw spring-boot:run</code>
-
-#### Depuis un IDE
- - **Eclipse** / **STS**
-
-Importer le projet.  
-Run As -> Spring Boot App.
-
- - **Visual Studio Code**
-
-Installer les extensions "Spring Boot Extension Pack" et "Java Extension Pack" si nécessaire.   
-Ouvrir le projet dans VS Code.  
-Lancer l'application depuis le Spring Boot Dashboard : Run. 
-
- - **IntelliJ IDEA**
-
-Ouvrir le projet en tant que Maven project.  
-Depuis la classe PayMyBuddyApiApplication : Run. 
+### 2. Lancer l'application
+`/mvnw spring-boot:run`
